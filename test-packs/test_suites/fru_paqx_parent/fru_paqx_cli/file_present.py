@@ -8,7 +8,7 @@ import traceback
 # Windows default(wbase) = 'C:\\' unix or Mac default(ubase) = '/'
 # File executable default(exe) = False
 # Returns path of file if found, and returns False if not found
-# Example: file_present(file_name="workflow-cli", wbase="C:\\Users\\", exe=True)
+# Example: file_present(file_name="workflow-cli.exe", wbase="C:\\Users\\", exe=True)
 
 
 def file_present(file_name='not_passed', wbase='C:\\', ubase='/', exe=False):
