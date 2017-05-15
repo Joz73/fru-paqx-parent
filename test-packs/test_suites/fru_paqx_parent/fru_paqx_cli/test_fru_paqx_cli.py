@@ -2,7 +2,7 @@ import pytest
 import traceback
 import requests
 import af_support_tools
-import executable_present
+import file_present
 import subprocess
 import platform
 import re
@@ -13,6 +13,7 @@ try:
     user = af_support_tools.get_config_file_property(config_file=env_file, heading='Base_OS', property='username')
     password = af_support_tools.get_config_file_property(config_file=env_file, heading='Base_OS', property='password')
 
+
 except Exception as e:
     print('Possible configuration error.')
     traceback.print_exc()
@@ -22,10 +23,29 @@ except Exception as e:
 @pytest.mark.cli_chk
 def test_fru_cli_chk():
     # Arrange
-    program = "workflow-cli"
+    os_system = platform.system()
+    print('\nMachine OS:' + os_system)
+
+    if os_system == 'Windows':
+        program = 'workflow-cli.exe'
+    else:
+        program = 'workflow-cli'
 
     # Act/Assert
-    assert executable_present.executable_present(program=program), 'CLI Not Present'
+    assert file_present.file_present(file_name=program, exe=True), 'CLI Not Found.\nPlease confirm Workflow-cli Present'
+
+
+@pytest.mark.api
+def test_fru_api():
+    # Arrange
+    url = 'https://{}:18443/fru/api/about'.format(ipaddress)
+
+    # Act
+    response = requests.get(url, verify=False)
+    print(url)
+
+    # Assert
+    assert response.status_code == 200, 'Unexpected API Response Code'
 
 
 @pytest.mark.cli_version
@@ -45,7 +65,7 @@ def test_fru_cli_version():
             command = ['./'+program, 'version']
             inshell = False
 
-        path = executable_present.executable_present(program=program)
+        path = file_present.file_present(file_name=program, exe=True)
         response = subprocess.check_output(command, cwd=path, stderr=subprocess.STDOUT, shell=inshell)
         response = response.decode('utf-8')
         # Searches for version with pattern 'v[0-9].[0-9].[0-9]-[0-9][0-9]' eg.'v0.0.13-6'; else Returns None
@@ -80,7 +100,7 @@ def test_fru_cli_target():
             command = ['./' + program, 'target', 'https://{}:18443'.format(ipaddress)]
             inshell = False
 
-        path = executable_present.executable_present(program=program)
+        path = file_present.file_present(file_name=program, exe=True)
         response = subprocess.check_output(command, cwd=path, stderr=subprocess.STDOUT, shell=inshell)
         response = response.decode('utf-8')
         print(response)
@@ -93,14 +113,13 @@ def test_fru_cli_target():
     # Assert
     assert 'Target set to https://{}:18443'.format(ipaddress) in response
 
-@pytest.mark.api
-def test_fru_api():
+
+@pytest.mark.cli_target_file
+def test_cli_target_file():
     # Arrange
-    url = 'https://{}:18443/fru/api/about'.format(ipaddress)
+    file = ".cli"
 
-    # Act
-    response = requests.get(url, verify=False)
-    print(url)
+    # Act/Assert
+    print(file_present.file_present(file_name=file))
+    assert file_present.file_present(file_name=file), "Target File not Created"
 
-    # Assert
-    assert response.status_code == 200, 'Unexpected API Response Code'
