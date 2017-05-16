@@ -20,7 +20,8 @@ except Exception as e:
     raise Exception(e)
 
 
-@pytest.mark.cli_chk
+@pytest.mark.fru_paqx_parent
+@pytest.mark.fru_mvp
 def test_fru_cli_chk():
     # Arrange
     os_system = platform.system()
@@ -35,7 +36,8 @@ def test_fru_cli_chk():
     assert file_present.file_present(file_name=program, exe=True), 'CLI Not Found.\nPlease confirm Workflow-cli Present'
 
 
-@pytest.mark.api
+@pytest.mark.fru_paqx_parent
+@pytest.mark.fru_mvp
 def test_fru_api():
     # Arrange
     url = 'https://{}:18443/fru/api/about'.format(ipaddress)
@@ -48,7 +50,8 @@ def test_fru_api():
     assert response.status_code == 200, 'Unexpected API Response Code'
 
 
-@pytest.mark.cli_version
+@pytest.mark.fru_paqx_parent
+@pytest.mark.fru_mvp
 def test_fru_cli_version():
     # Arrange
     os_system = platform.system()
@@ -83,7 +86,8 @@ def test_fru_cli_version():
     assert searchObj is not None, 'Version Incorrect'
 
 
-@pytest.mark.cli_set_target
+@pytest.mark.fru_paqx_parent
+@pytest.mark.fru_mvp
 def test_fru_cli_target():
     # Arrange
     os_system = platform.system()
@@ -114,12 +118,58 @@ def test_fru_cli_target():
     assert 'Target set to https://{}:18443'.format(ipaddress) in response
 
 
-@pytest.mark.cli_target_file
+@pytest.mark.fru_paqx_parent
+@pytest.mark.fru_mvp
 def test_cli_target_file():
     # Arrange
-    file = ".cli"
+    file = '.cli'
+    os_system = platform.system()
+    print('\nMachine OS:' + os_system)
 
-    # Act/Assert
-    print(file_present.file_present(file_name=file))
-    assert file_present.file_present(file_name=file), "Target File not Created"
+    # Act
+    path = file_present.file_present(file_name=file)
+    if os_system == 'Windows':
+        dir_seperator = '\\'
+    else:
+        dir_seperator = '/'
 
+    if path:
+        with open(path+dir_seperator+file, 'r') as cli_file:
+            content = cli_file.read()
+    # Assert
+            assert ipaddress in content, "Target IP Incorrect"
+    else:
+        assert path, "Target File not Created"
+
+###### In Develpment ######
+
+# @pytest.mark.fru_paqx_parent
+# @pytest.mark.fru_mvp
+# def test_cli_fru_start():
+#     # Arrange
+#     os_system = platform.system()
+#     print('\nMachine OS:' + os_system)
+#
+#     # Act
+#     try:
+#         if os_system == 'Windows':
+#             program = 'workflow-cli.exe'
+#             command = [program, 'start']
+#             inshell = True
+#         else:
+#             program = 'workflow-cli'
+#             command = ['./' + program, 'start']
+#             inshell = False
+#
+#         path = file_present.file_present(file_name=program, exe=True)
+#         response = subprocess.check_output(command, cwd=path, stderr=subprocess.STDOUT, shell=inshell)
+#         response = response.decode('utf-8')
+#         print(response)
+#
+#     except Exception as err:
+#         print('Unexpected error: ' + str(err))
+#         traceback.print_exc()
+#         raise Exception(err)
+
+    # Assert
+    # assert ''.format(ipaddress) in response
