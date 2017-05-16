@@ -18,7 +18,7 @@ pipeline {
     }
     environment {
         GITHUB_TOKEN = credentials('github-02')
-        COMPOSE_PROJECT_NAME = '${BRANCH_NAME}-${BUILD_NUMBER}'
+        COMPOSE_PROJECT_NAME = "fru-paqx-parent-develop-${env.BUILD_NUMBER}"
 
     }
     options { 
@@ -38,6 +38,7 @@ pipeline {
         stage('Prepare test services') {
             steps {
                 sh "docker-compose -f ${WORKSPACE}/ci/docker/docker-compose.yml pull"
+
                 sh "docker-compose -f ${WORKSPACE}/ci/docker/docker-compose.yml up --force-recreate -d"
             }
         }
@@ -56,6 +57,13 @@ pipeline {
                 sh "mvn package -DskipTests=true -DskipITs"
             }
     	}
+        stage('Artifact') {
+            steps {
+               sh "mvn install -DskipTests=true -DskipITs -P buildDockerImageOnJenkins"
+               archiveArtifacts '**/*.rpm'
+            }
+        }
+
         stage('Deploy') {
 	        when {
                 expression {
@@ -63,7 +71,8 @@ pipeline {
                 }
             }
             steps {
-                sh "mvn deploy -DskipTests=true -DskipITs -P buildDockerImageOnJenkins -Ddocker.registry=docker-dev-local.art.local"
+                sh "mvn deploy -P buildDockerImageOnJenkins -DdockerImage.tag=api-gateway-parent-develop.${env.BUILD_NUMBER} -Ddocker.registry=docker-dev-local.art.local -DdeleteDockerImages=true -DskipTests=true -DskipITs"
+		            archiveArtifacts artifacts: '**/*.rpm', fingerprint: true
             }
         }
         stage('SonarQube Analysis') {
@@ -91,7 +100,7 @@ pipeline {
         stage('NexB Scan') {
 	        when {
                 expression {
-                    return env.BRANCH_NAME ==~ /master|develop|release\/.*/
+                    return env.BRANCH_NAME ==~ /develop|release\/.*/
                 }
             }
             steps {
@@ -106,6 +115,8 @@ pipeline {
             step([$class: 'WsCleanup'])   
         }
         success {
+
+
             emailext attachLog: true, 
                 body: 'Pipeline job ${JOB_NAME} success. Build URL: ${BUILD_URL}', 
                 recipientProviders: [[$class: 'CulpritsRecipientProvider']], 

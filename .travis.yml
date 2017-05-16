@@ -1,7 +1,7 @@
 language: java
 jdk:
-- oraclejdk8
+  - oraclejdk8
 
 script:
-- mvn clean compile
-- mvn test
+  - mvn clean compile
+  - mvn test
