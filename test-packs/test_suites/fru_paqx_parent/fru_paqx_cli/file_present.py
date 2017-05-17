@@ -3,15 +3,20 @@ import os
 import platform
 import traceback
 
-# The following is a function for searching for an file on the current system
-# Accepts String value of file_name, base directory to start search and if program is executable(True/False)
-# Windows default(wbase) = 'C:\\' unix or Mac default(ubase) = '/'
-# File executable default(exe) = False
-# Returns path of file if found, and returns False if not found
-# Example: file_present(file_name="workflow-cli.exe", wbase="C:\\Users\\", exe=True)
-
 
 def file_present(file_name='not_passed', wbase='C:\\', ubase='/', exe=False):
+    """
+    Description: 
+        The following is a function for searching for an file on the current system.
+    Example usage:
+    file_present(file_name="workflow-cli.exe", wbase="C:\\Users\\", exe=True)
+    
+    :param file_name: File name to be searched for.
+    :param wbase: Base Windows directory to start search (Default: 'C:\\')
+    :param ubase: Base Unix/Mac directory to start search (Default: '/')
+    :param exe: Check if file is executable (Default: False)
+    :return: str Path to where file has been found. False if not found.
+    """
     try:
         file_name = str(file_name)
         os_system = platform.system()
