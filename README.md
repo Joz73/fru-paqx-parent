@@ -72,15 +72,15 @@ This call returns a JSON response that provides the next step to execute in the 
 ```
 {
     "id": "123abc-456def-789ghi",
-    "workflow": "quanta-replacement-d51b-esxi",
+   "workflow": "quanta-replacement-d51b-esxi",
     "currentStep": "Initiate Workflow",
     "nodes": null,
-    "links": [{
-        "rel": "step-next",
+   "links": [{
+       "rel": "step-next",
         "href": "https://localhost:18443/fru/api/workflow/123abc-456def-789ghi/rackhd-endpoint",
-        "type": "application/vnd.dellemc.rackhd.endpoint+json",
-        "method": "POST"
-    }]
+       "type": "application/vnd.dellemc.rackhd.endpoint+json",
+       "method": "POST"
+   }]
 }
 ```
 Execute the rackhd-endpoint API call (shown in the href value above) with a POST body that uses the format shown below:
