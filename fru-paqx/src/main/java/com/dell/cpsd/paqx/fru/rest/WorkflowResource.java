@@ -30,6 +30,7 @@ import com.dell.cpsd.virtualization.capabilities.api.ClusterOperationResponseMes
 import com.dell.cpsd.virtualization.capabilities.api.DestroyVMResponseMessage;
 import com.dell.cpsd.virtualization.capabilities.api.HostMaintenanceModeResponseMessage;
 import com.dell.cpsd.virtualization.capabilities.api.HostPowerOperationResponseMessage;
+import com.dell.cpsd.virtualization.capabilities.api.TaskAckMessage;
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -385,7 +386,7 @@ public class WorkflowResource {
         final JobRepresentation jobRepresentation = new JobRepresentation(job);
 
         final CompletableFuture<vCenterSystemProperties> vcenterSystemCompletableFuture = vcenterService
-                .showSystem(job.getVcenterCredentials());
+                .discoverVCenter(job.getVcenterCredentials());
         vcenterSystemCompletableFuture.thenAccept(vCenterSystemProperties ->
         {
             // TODO: Enable the raw storage object with correlation
@@ -563,9 +564,10 @@ public class WorkflowResource {
     }
 
     @POST
-    @Path("{jobId}/enter-maintanence-mode")
+    @Path("{jobId}/enter-maintenance-mode")
     public void enterMaintenanceMode(@Suspended final AsyncResponse asyncResponse, @PathParam("jobId") String jobId,
-            @Context UriInfo uriInfo) {
+            @Context UriInfo uriInfo)
+    {
         asyncResponse.setTimeoutHandler(asyncResponse1 -> asyncResponse1
                 .resume(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("{\"status\":\"timeout\"}").build()));
         asyncResponse.setTimeout(10, TimeUnit.SECONDS);
@@ -574,34 +576,28 @@ public class WorkflowResource {
         final Job job = workflowService.findJob(UUID.fromString(jobId));
         final JobRepresentation jobRepresentation = new JobRepresentation(job);
 
-        //TODO: Make sure job has the selected host representation
         final HostRepresentation hostRepresentation = job.getSelectedHostRepresentation();
         final String hostname = hostRepresentation.getHostName();
 
-        final CompletableFuture<HostMaintenanceModeResponse> hostMaintenanceModeCompletableFuture = vcenterService
+        final LongRunning<TaskAckMessage, HostMaintenanceModeResponse> longRunning = vcenterService
                 .requestHostMaintenanceModeEnable(job.getVcenterCredentials(), hostname);
-        hostMaintenanceModeCompletableFuture.thenAccept(hostMaintenanceModeResponse ->
+
+        //TODO: Bug for now, needs to take two lambdas that advances to next step for success and doesn't for failure
+        longRunning.onAcknowledged(taskAckMessage ->
         {
-            LOG.info("Host Maintenance Mode Response: [{}]", hostMaintenanceModeResponse);
-
-            if (HostMaintenanceModeResponseMessage.Status.SUCCESS.value().equals(hostMaintenanceModeResponse.getStatus())) {
-                final NextStep nextStep = workflowService.findNextStep(job.getWorkflow(), thisStep);
-                if (nextStep != null) {
-                    workflowService.advanceToNextStep(job, thisStep);
-                    jobRepresentation
-                            .addLink(createNextStepLink(uriInfo, job, nextStep.getNextStep()), findMethodFromStep(nextStep.getNextStep()));
-                }
-
-                asyncResponse.resume(Response.ok(jobRepresentation).build());
-            } else {
-                jobRepresentation.addLink(createRetryStepLink(uriInfo, job, thisStep));
-                jobRepresentation.setLastResponse(hostMaintenanceModeResponse.getStatus());
-                asyncResponse.resume(Response.status(Response.Status.BAD_REQUEST).build());
-            }
-
-            LOG.info("Completing response");
+            LOG.debug("Long running task acknowledged: [{}]", taskAckMessage);
+            jobRepresentation.addLink(createLongRunningNextStepLink(uriInfo, job, thisStep), findMethodFromStep("longRunning"));
             asyncResponse.resume(Response.ok(jobRepresentation).build());
-            LOG.debug("Completed response");
+        }).onCompleted(hostMaintenanceModeResponse ->
+        {
+            if (HostMaintenanceModeResponseMessage.Status.SUCCESS.value().equals(hostMaintenanceModeResponse.getStatus()))
+            {
+                workflowService.advanceToNextStep(job, thisStep);
+            }
+            else
+            {
+
+            }
         });
     }
 

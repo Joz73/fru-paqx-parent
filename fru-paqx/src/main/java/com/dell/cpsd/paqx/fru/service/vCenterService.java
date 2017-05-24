@@ -13,6 +13,8 @@ import com.dell.cpsd.paqx.fru.rest.dto.vcenter.ClusterOperationResponse;
 import com.dell.cpsd.paqx.fru.rest.dto.vcenter.DestroyVmResponse;
 import com.dell.cpsd.paqx.fru.rest.dto.vcenter.HostMaintenanceModeResponse;
 import com.dell.cpsd.paqx.fru.rest.representation.HostRepresentation;
+import com.dell.cpsd.paqx.fru.valueobject.LongRunning;
+import com.dell.cpsd.virtualization.capabilities.api.TaskAckMessage;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -21,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
  * Dell EMC Confidential/Proprietary Information
  */
 public interface vCenterService {
-    CompletableFuture<vCenterSystemProperties> showSystem(final EndpointCredentials vcenterCredentials);
+    CompletableFuture<vCenterSystemProperties> discoverVCenter(final EndpointCredentials vcenterCredentials);
 
     CompletableFuture<ConsulRegistryResult> requestConsulRegistration(final EndpointCredentials vcenterCredentials);
 
@@ -31,7 +33,7 @@ public interface vCenterService {
     CompletableFuture<DestroyVmResponse> requestVmDeletion(final EndpointCredentials vcenterCredentials, final String jobId,
             final HostRepresentation hostRepresentation);
 
-    CompletableFuture<HostMaintenanceModeResponse> requestHostMaintenanceModeEnable(EndpointCredentials vcenterCredentials,
+    LongRunning<TaskAckMessage, HostMaintenanceModeResponse> requestHostMaintenanceModeEnable(EndpointCredentials vcenterCredentials,
                                                                                     String hostname);
 
     CompletableFuture<ClusterOperationResponse> requestHostRemoval(final EndpointCredentials vcenterCredentials, final String clusterId,

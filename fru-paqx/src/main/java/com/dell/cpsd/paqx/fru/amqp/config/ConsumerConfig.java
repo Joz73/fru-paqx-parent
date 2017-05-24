@@ -140,6 +140,12 @@ public class ConsumerConfig {
     }
 
     @Bean
+    VCenterTaskAckResponseHandler vCenterTaskAckResponseHandler()
+    {
+        return new VCenterTaskAckResponseHandler(messageErrorTransformer());
+    }
+
+    @Bean
     ScaleIORemoveResponseHandler scaleIORemoveResponseHandler() {
         return new ScaleIORemoveResponseHandler(messageErrorTransformer());
     }
