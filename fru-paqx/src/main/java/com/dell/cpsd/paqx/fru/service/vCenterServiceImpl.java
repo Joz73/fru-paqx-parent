@@ -9,6 +9,8 @@ import com.dell.cpsd.hdp.capability.registry.api.Capability;
 import com.dell.cpsd.hdp.capability.registry.client.CapabilityRegistryException;
 import com.dell.cpsd.hdp.capability.registry.client.ICapabilityRegistryLookupManager;
 import com.dell.cpsd.paqx.fru.amqp.consumer.handler.AsyncAcknowledgement;
+import com.dell.cpsd.paqx.fru.amqp.consumer.handler.VCenterTaskAckResponseHandler;
+import com.dell.cpsd.paqx.fru.domain.VCenter;
 import com.dell.cpsd.paqx.fru.dto.ConsulRegistryResult;
 import com.dell.cpsd.paqx.fru.rest.dto.EndpointCredentials;
 import com.dell.cpsd.paqx.fru.rest.dto.VCenterHostPowerOperationStatus;
@@ -21,12 +23,17 @@ import com.dell.cpsd.paqx.fru.valueobject.LongRunning;
 import com.dell.cpsd.service.common.client.exception.ServiceTimeoutException;
 import com.dell.cpsd.virtualization.capabilities.api.ClusterOperationRequest;
 import com.dell.cpsd.virtualization.capabilities.api.ClusterOperationRequestMessage;
+import com.dell.cpsd.virtualization.capabilities.api.ClusterOperationResponseMessage;
 import com.dell.cpsd.virtualization.capabilities.api.ConsulRegisterRequestMessage;
 import com.dell.cpsd.virtualization.capabilities.api.Credentials;
 import com.dell.cpsd.virtualization.capabilities.api.DestroyVMRequestMessage;
+import com.dell.cpsd.virtualization.capabilities.api.DestroyVMResponseMessage;
 import com.dell.cpsd.virtualization.capabilities.api.DiscoveryRequestInfoMessage;
+import com.dell.cpsd.virtualization.capabilities.api.DiscoveryResponseInfoMessage;
 import com.dell.cpsd.virtualization.capabilities.api.HostMaintenanceModeRequestMessage;
+import com.dell.cpsd.virtualization.capabilities.api.HostMaintenanceModeResponseMessage;
 import com.dell.cpsd.virtualization.capabilities.api.HostPowerOperationRequestMessage;
+import com.dell.cpsd.virtualization.capabilities.api.HostPowerOperationResponseMessage;
 import com.dell.cpsd.virtualization.capabilities.api.MaintenanceModeRequest;
 import com.dell.cpsd.virtualization.capabilities.api.MessageProperties;
 import com.dell.cpsd.virtualization.capabilities.api.PowerOperationRequest;
@@ -58,38 +65,38 @@ public class vCenterServiceImpl implements vCenterService
 {
     private static final Logger LOG = LoggerFactory.getLogger(vCenterServiceImpl.class);
 
-    private final ICapabilityRegistryLookupManager capabilityRegistryLookupManager;
-    private final RabbitTemplate                   rabbitTemplate;
-    private final AmqpAdmin                        amqpAdmin;
-    private final Queue                            responseQueue;
-    private final AsyncAcknowledgement             asyncAcknowledgement;
-    private final AsyncAcknowledgement             consulRegisterAsyncAcknowledgement;
-    private final AsyncAcknowledgement             vmDeletionAsyncAcknowledgement;
-    private final AsyncAcknowledgement             vCenterHostPowerAsyncAcknowledgement;
-    private final AsyncAcknowledgement             hostMaintenanceModeAsyncAcknowledgement;
-    private final AsyncAcknowledgement             vcenterClusterOperationAsyncAcknowledgement;
-    private final AsyncAcknowledgement             vcenterTaskAckAsyncAcknowledgement;
-    private final String                           replyTo;
-    private final FruService                       fruService;
-    private final DataService                      dataService;
+    private final ICapabilityRegistryLookupManager               capabilityRegistryLookupManager;
+    private final RabbitTemplate                                 rabbitTemplate;
+    private final AmqpAdmin                                               amqpAdmin;
+    private final Queue                                                   responseQueue;
+    private final AsyncAcknowledgement<VCenter>                            vCenterAsyncAcknowledgement;
+    private final AsyncAcknowledgement<ConsulRegistryResult>               consulRegisterAsyncAcknowledgement;
+    private final AsyncAcknowledgement<DestroyVmResponse>               vmDeletionAsyncAcknowledgement;
+    private final AsyncAcknowledgement<VCenterHostPowerOperationStatus> vCenterHostPowerAsyncAcknowledgement;
+    private final AsyncAcknowledgement<HostMaintenanceModeResponse>     hostMaintenanceModeAsyncAcknowledgement;
+    private final AsyncAcknowledgement<ClusterOperationResponse>        vcenterClusterOperationAsyncAcknowledgement;
+    private final AsyncAcknowledgement<TaskAckMessage>   vcenterTaskAckAsyncAcknowledgement;
+    private final String                                                replyTo;
+    private final FruService                                            fruService;
+    private final DataService                                           dataService;
 
     @Autowired
     public vCenterServiceImpl(final ICapabilityRegistryLookupManager capabilityRegistryLookupManager, final RabbitTemplate rabbitTemplate,
             final AmqpAdmin amqpAdmin, final Queue responseQueue,
-            @Qualifier(value = "vCenterDiscoverResponseHandler") final AsyncAcknowledgement asyncAcknowledgement,
-            @Qualifier(value = "vCenterConsulRegisterResponseHandler") final AsyncAcknowledgement consulRegisterAsyncAcknowledgement,
-            @Qualifier(value = "vCenterDestroyVmResponseHandler") final AsyncAcknowledgement vmDeletionAsyncAcknowledgement,
-            @Qualifier(value = "vCenterHostPowerOperationResponseHandler") final AsyncAcknowledgement vCenterHostPowerAsyncAcknowledgement,
-            @Qualifier(value = "vCenterHostMaintenanceModeResponseHandler") final AsyncAcknowledgement hostMaintenanceModeAsyncAcknowledgement,
-            @Qualifier(value = "vCenterClusterOperationsResponseHandler") final AsyncAcknowledgement vcenterClusterOperationAsyncAcknowledgement,
-            @Qualifier(value = "vCenterTaskAckResponseHandler") final AsyncAcknowledgement vcenterTaskAckAsyncAcknowledgement,
+            @Qualifier(value = "vCenterDiscoverResponseHandler") final AsyncAcknowledgement<VCenter> vCenterAsyncAcknowledgement,
+            @Qualifier(value = "vCenterConsulRegisterResponseHandler") final AsyncAcknowledgement<ConsulRegistryResult> consulRegisterAsyncAcknowledgement,
+            @Qualifier(value = "vCenterDestroyVmResponseHandler") final AsyncAcknowledgement<DestroyVmResponse> vmDeletionAsyncAcknowledgement,
+            @Qualifier(value = "vCenterHostPowerOperationResponseHandler") final AsyncAcknowledgement<VCenterHostPowerOperationStatus> vCenterHostPowerAsyncAcknowledgement,
+            @Qualifier(value = "vCenterHostMaintenanceModeResponseHandler") final AsyncAcknowledgement<HostMaintenanceModeResponse> hostMaintenanceModeAsyncAcknowledgement,
+            @Qualifier(value = "vCenterClusterOperationsResponseHandler") final AsyncAcknowledgement<ClusterOperationResponse> vcenterClusterOperationAsyncAcknowledgement,
+            @Qualifier(value = "vCenterTaskAckResponseHandler") final AsyncAcknowledgement<TaskAckMessage> vcenterTaskAckAsyncAcknowledgement,
             @Qualifier(value = "replyTo") final String replyTo, final FruService fruService, final DataService dataService)
     {
         this.capabilityRegistryLookupManager = capabilityRegistryLookupManager;
         this.rabbitTemplate = rabbitTemplate;
         this.amqpAdmin = amqpAdmin;
         this.responseQueue = responseQueue;
-        this.asyncAcknowledgement = asyncAcknowledgement;
+        this.vCenterAsyncAcknowledgement = vCenterAsyncAcknowledgement;
         this.consulRegisterAsyncAcknowledgement = consulRegisterAsyncAcknowledgement;
         this.vmDeletionAsyncAcknowledgement = vmDeletionAsyncAcknowledgement;
         this.vCenterHostPowerAsyncAcknowledgement = vCenterHostPowerAsyncAcknowledgement;
@@ -101,7 +108,7 @@ public class vCenterServiceImpl implements vCenterService
         this.dataService = dataService;
     }
 
-    public CompletableFuture<vCenterSystemProperties> discoverVCenter(final EndpointCredentials vcenterCredentials)
+    public CompletableFuture<VCenter> showSystem(final EndpointCredentials vcenterCredentials)
     {
         final String requiredCapability = "vcenter-discover";
 
@@ -134,7 +141,7 @@ public class vCenterServiceImpl implements vCenterService
             credentials.setPassword(vcenterCredentials.getPassword());
             requestMessage.setCredentials(credentials);
 
-            final CompletableFuture<vCenterSystemProperties> promise = asyncAcknowledgement.register(correlationId.toString());
+            final CompletableFuture<VCenter> promise = vCenterAsyncAcknowledgement.register(correlationId.toString());
 
             rabbitTemplate.convertAndSend(requestExchange, requestRoutingKey, requestMessage);
 
@@ -146,7 +153,7 @@ public class vCenterServiceImpl implements vCenterService
         }
         catch (MalformedURLException e)
         {
-            final CompletableFuture<vCenterSystemProperties> promise = new CompletableFuture<>();
+            final CompletableFuture<VCenter> promise = new CompletableFuture<>();
             LOG.error("Malformed URL Exception with url [{}]", vcenterCredentials.getEndpointUrl());
             promise.completeExceptionally(e);
             return promise;

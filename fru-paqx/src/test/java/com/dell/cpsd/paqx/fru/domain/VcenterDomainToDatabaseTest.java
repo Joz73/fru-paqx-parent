@@ -176,7 +176,7 @@ public class VcenterDomainToDatabaseTest
     @Test
     public void vCenterDiscoveryTest() throws Exception
     {
-        final Message message = jsonMessage("com.dell.cpsd.vcenter.discoveryResponseInfo", "src/test/resources/vcenterResponseDiscoveryPayload.json");
+        final Message message = jsonMessage("com.dell.cpsd.vcenter.discover.response", "src/test/resources/vcenterResponseDiscoveryPayload.json");
         final DiscoveryResponseInfoMessage entity = (DiscoveryResponseInfoMessage) converter.fromMessage(message);
 
         assertNotNull(entity);
@@ -199,7 +199,7 @@ public class VcenterDomainToDatabaseTest
     @Test
     public void testPersistVCenterAndScaleIOObjects() throws Exception
     {
-        final Message messageV = jsonMessage("com.dell.cpsd.vcenter.discoveryResponseInfo",
+        final Message messageV = jsonMessage("com.dell.cpsd.vcenter.discover.response",
                 "src/test/resources/vcenterResponseDiscoveryPayload.json");
         final DiscoveryResponseInfoMessage entityV = (DiscoveryResponseInfoMessage) converter.fromMessage(messageV);
 

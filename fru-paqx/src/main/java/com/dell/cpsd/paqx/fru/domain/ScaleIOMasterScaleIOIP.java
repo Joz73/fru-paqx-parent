@@ -13,7 +13,6 @@ import javax.persistence.Entity;
  * Dell EMC Confidential/Proprietary Information
  */
 @Entity
-@DiscriminatorValue("MASTER")
 public class ScaleIOMasterScaleIOIP extends com.dell.cpsd.paqx.fru.domain.ScaleIOIP
 {
     public ScaleIOMasterScaleIOIP()

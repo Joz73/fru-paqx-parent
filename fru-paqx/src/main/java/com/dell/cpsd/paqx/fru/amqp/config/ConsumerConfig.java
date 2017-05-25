@@ -18,6 +18,7 @@ import com.dell.cpsd.paqx.fru.amqp.model.Error;
 import com.dell.cpsd.paqx.fru.amqp.model.FruErrorMessage;
 import com.dell.cpsd.paqx.fru.amqp.model.MessageProperties;
 import com.dell.cpsd.paqx.fru.transformers.DestroyVMDtoToDestroyVMRequestMessageTransformer;
+import com.dell.cpsd.paqx.fru.transformers.DiscoveryInfoToVCenterDomainTransformer;
 import com.dell.cpsd.paqx.fru.transformers.DiscoveryInfoToVCenterSystemPropertiesTransformer;
 import com.dell.cpsd.paqx.fru.transformers.HostListToHostRepresentationTransformer;
 import com.dell.cpsd.paqx.fru.transformers.SDSListDtoToRemoveScaleIOMessageTransformer;
@@ -101,7 +102,7 @@ public class ConsumerConfig {
 
     @Bean
     VCenterDiscoverResponseHandler vCenterDiscoverResponseHandler() {
-        return new VCenterDiscoverResponseHandler(messageErrorTransformer(), discoveryInfoToVCenterSystemPropertiesTransformer());
+        return new VCenterDiscoverResponseHandler(messageErrorTransformer(), discoveryInfoToVCenterDomainTransformer());
     }
 
     @Bean
@@ -167,8 +168,8 @@ public class ConsumerConfig {
     }
 
     @Bean
-    DiscoveryInfoToVCenterSystemPropertiesTransformer discoveryInfoToVCenterSystemPropertiesTransformer() {
-        return new DiscoveryInfoToVCenterSystemPropertiesTransformer();
+    DiscoveryInfoToVCenterDomainTransformer discoveryInfoToVCenterDomainTransformer() {
+        return new DiscoveryInfoToVCenterDomainTransformer();
     }
 
     @Bean

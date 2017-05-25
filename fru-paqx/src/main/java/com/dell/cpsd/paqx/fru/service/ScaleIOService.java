@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface ScaleIOService {
     CompletableFuture<ScaleIOSystemDataRestRep> listStorage(final EndpointCredentials scaleIOCredentials);
-    LongRunning<OrderAckMessage, OrderInfo> sioNodeRemove(final EndpointCredentials scaleIOCredentials,
+    LongRunning<OrderAckMessage, OrderInfo> sioNodeRemove(final EndpointCredentials coprHDCredentials,
             final EndpointCredentials scaleIOMDMCredentials, final String jobId, final HostRepresentation hostRepresentation);
     CompletableFuture<ConsulRegistryResult> requestConsulRegistration(final EndpointCredentials scaleIOCredentials);
 }

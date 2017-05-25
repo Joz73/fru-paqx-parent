@@ -122,7 +122,7 @@ public class ScaleIOServiceImpl implements ScaleIOService
         }
     }
 
-    public LongRunning<OrderAckMessage, OrderInfo> sioNodeRemove(final EndpointCredentials scaleIOCredentials,
+    public LongRunning<OrderAckMessage, OrderInfo> sioNodeRemove(final EndpointCredentials coprHDCredentials,
             final EndpointCredentials scaleIOMDMCredentials, final String jobId, final HostRepresentation hostRepresentation)
     {
         final String requiredCapability = "coprhd-sio-node-remove";
@@ -141,9 +141,10 @@ public class ScaleIOServiceImpl implements ScaleIOService
             final String correlationID = UUID.randomUUID().toString();
 
             // Check data and form Message
+            URL coprHDUrl;
             try
             {
-                new URL(scaleIOCredentials.getEndpointUrl());
+                coprHDUrl = new URL(coprHDCredentials.getEndpointUrl());
             }
             catch (MalformedURLException e)
             {
@@ -155,8 +156,15 @@ public class ScaleIOServiceImpl implements ScaleIOService
             }
 
             final SIONodeRemoveRequestMessage requestMessage = dataService
-                    .getSDSHostsToRemoveFromHostRepresentation(jobId, hostRepresentation, scaleIOCredentials.getEndpointUrl(),
+                    .getSDSHostsToRemoveFromHostRepresentation(jobId, hostRepresentation,
                             scaleIOMDMCredentials.getPassword(), scaleIOMDMCredentials.getUsername());
+
+            requestMessage.setIpAddress(coprHDCredentials.getEndpointUrl());
+            requestMessage.setUserName(coprHDCredentials.getUsername());
+            requestMessage.setPassword(coprHDCredentials.getPassword());
+            requestMessage.setServicePortNumber("443");
+            requestMessage.setApiPortNumber(String.valueOf(coprHDUrl.getPort()));
+
             requestMessage.setMessageProperties(new MessageProperties(new Date(), correlationID, replyTo));
 
             final CompletableFuture<OrderAckMessage> acknowledgementPromise = ackAsyncAcknowledgement.register(correlationID.toString());

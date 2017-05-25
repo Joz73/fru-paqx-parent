@@ -32,7 +32,7 @@ public class Host {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "host", orphanRemoval = true)
     List<VSwitch> vSwitchList = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "host", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "host", orphanRemoval = true, fetch = FetchType.EAGER)
     List<VirtualNic> virtualNicList = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "host", orphanRemoval = true)

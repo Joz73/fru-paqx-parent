@@ -37,6 +37,10 @@ public class FruJob
     @OneToOne(cascade = CascadeType.ALL)
     private VCenter vcenter;
 
+    public FruJob()
+    {
+    }
+
     public FruJob(final String id, final ScaleIOData scaleIO, final VCenter vcenter)
     {
         this.id = id;

@@ -5,10 +5,10 @@
 
 package com.dell.cpsd.paqx.fru.service;
 
+import com.dell.cpsd.paqx.fru.domain.VCenter;
 import com.dell.cpsd.paqx.fru.dto.ConsulRegistryResult;
 import com.dell.cpsd.paqx.fru.rest.dto.EndpointCredentials;
 import com.dell.cpsd.paqx.fru.rest.dto.VCenterHostPowerOperationStatus;
-import com.dell.cpsd.paqx.fru.rest.dto.vCenterSystemProperties;
 import com.dell.cpsd.paqx.fru.rest.dto.vcenter.ClusterOperationResponse;
 import com.dell.cpsd.paqx.fru.rest.dto.vcenter.DestroyVmResponse;
 import com.dell.cpsd.paqx.fru.rest.dto.vcenter.HostMaintenanceModeResponse;
@@ -23,7 +23,8 @@ import java.util.concurrent.CompletableFuture;
  * Dell EMC Confidential/Proprietary Information
  */
 public interface vCenterService {
-    CompletableFuture<vCenterSystemProperties> discoverVCenter(final EndpointCredentials vcenterCredentials);
+
+    CompletableFuture<VCenter> showSystem(final EndpointCredentials vcenterCredentials);
 
     CompletableFuture<ConsulRegistryResult> requestConsulRegistration(final EndpointCredentials vcenterCredentials);
 

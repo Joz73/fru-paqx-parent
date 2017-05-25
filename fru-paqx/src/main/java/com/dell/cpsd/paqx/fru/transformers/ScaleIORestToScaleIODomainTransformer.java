@@ -349,7 +349,7 @@ public class ScaleIORestToScaleIODomainTransformer
             domainCluster.addTiebreaker(domainTiebreaker);
             domainTiebreaker.setMdmCluster(domainCluster);
             //Now add ips and management ips
-            addIPs(domainTiebreaker, tiebreaker.getIps());
+            addIPs(domainTiebreaker, tiebreaker.getIps(), "tiebreaker");
             addManagementIPs(domainTiebreaker, tiebreaker.getManagementIPs());
         }
     }
@@ -374,7 +374,7 @@ public class ScaleIORestToScaleIODomainTransformer
             domainCluster.addSlave(domainSlave);
             domainSlave.setMdmCluster(domainCluster);
             //Now add ips and management ips
-            addIPs(domainSlave, slave.getIps());
+            addIPs(domainSlave, slave.getIps(), "slave");
             addManagementIPs(domainSlave, slave.getManagementIPs());
         }
     }
@@ -389,18 +389,19 @@ public class ScaleIORestToScaleIODomainTransformer
             domainCluster.addMaster(master);
             master.setMdmCluster(domainCluster);
             //Now add ips and management ips
-            addIPs(master, masterDataRestRep.getIps());
+            addIPs(master, masterDataRestRep.getIps(), "master");
             addManagementIPs(master, masterDataRestRep.getManagementIPs());
         }
     }
 
-    private void addIPs(final ScaleIOSDSElementInfo master, final List<String> ips)
+    private void addIPs(final ScaleIOSDSElementInfo master, final List<String> ips, String type)
     {
         if (ips != null)
         {
             for (String ip : ips)
             {
-                ScaleIOMasterScaleIOIP domainIP = new ScaleIOMasterScaleIOIP(master.getId(), ip);
+                ScaleIOIP domainIP = new ScaleIOIP(ip);
+                domainIP.setType(type);
                 domainIP.setScaleIOSDSElementInfo(master);
                 master.addIP(domainIP);
             }

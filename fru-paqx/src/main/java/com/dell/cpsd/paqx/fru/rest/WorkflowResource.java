@@ -5,12 +5,12 @@
 
 package com.dell.cpsd.paqx.fru.rest;
 
+import com.dell.cpsd.paqx.fru.domain.VCenter;
 import com.dell.cpsd.paqx.fru.dto.ConsulRegistryResult;
 import com.dell.cpsd.paqx.fru.rest.domain.Job;
 import com.dell.cpsd.paqx.fru.rest.dto.EndpointCredentials;
 import com.dell.cpsd.paqx.fru.rest.dto.StartWorkflowRequest;
 import com.dell.cpsd.paqx.fru.rest.dto.VCenterHostPowerOperationStatus;
-import com.dell.cpsd.paqx.fru.rest.dto.vCenterSystemProperties;
 import com.dell.cpsd.paqx.fru.rest.dto.vcenter.ClusterOperationResponse;
 import com.dell.cpsd.paqx.fru.rest.dto.vcenter.DestroyVmResponse;
 import com.dell.cpsd.paqx.fru.rest.dto.vcenter.HostMaintenanceModeResponse;
@@ -344,7 +344,7 @@ public class WorkflowResource {
     public void discoverScaleIO(@Suspended final AsyncResponse asyncResponse, @PathParam("jobId") String jobId, @Context UriInfo uriInfo) {
         asyncResponse.setTimeoutHandler(asyncResponse1 -> asyncResponse1
                 .resume(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("{\"status\":\"timeout\"}").build()));
-        asyncResponse.setTimeout(10, TimeUnit.SECONDS);
+        asyncResponse.setTimeout(120, TimeUnit.SECONDS);
 
         //
         final String thisStep = findStepFromPath(uriInfo);
@@ -379,18 +379,17 @@ public class WorkflowResource {
     public void discovervCenter(@Suspended final AsyncResponse asyncResponse, @PathParam("jobId") String jobId, @Context UriInfo uriInfo) {
         asyncResponse.setTimeoutHandler(asyncResponse1 -> asyncResponse1
                 .resume(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("{\"status\":\"timeout\"}").build()));
-        asyncResponse.setTimeout(60, TimeUnit.SECONDS);
+        asyncResponse.setTimeout(120, TimeUnit.SECONDS);
 
         final String thisStep = findStepFromPath(uriInfo);
         final Job job = workflowService.findJob(UUID.fromString(jobId));
         final JobRepresentation jobRepresentation = new JobRepresentation(job);
 
-        final CompletableFuture<vCenterSystemProperties> vcenterSystemCompletableFuture = vcenterService
-                .discoverVCenter(job.getVcenterCredentials());
-        vcenterSystemCompletableFuture.thenAccept(vCenterSystemProperties ->
+        final CompletableFuture<VCenter> vcenterSystemCompletableFuture = vcenterService
+                .showSystem(job.getVcenterCredentials());
+        vcenterSystemCompletableFuture.thenAccept(vCenter ->
         {
-            // TODO: Enable the raw storage object with correlation
-            dataService.saveVcenterData(UUID.fromString(jobId), vCenterSystemProperties);
+            dataService.saveVcenterData(UUID.fromString(jobId), vCenter);
 
             final NextStep nextStep = workflowService.findNextStep(job.getWorkflow(), thisStep);
             if (nextStep != null) {
@@ -410,21 +409,47 @@ public class WorkflowResource {
     }
 
     @POST
-    @Consumes("application/vnd.dellemc.nodes.list.remove+json")
-    @Path("{jobId}/present-system-list-remove")
-    public void presentSystemListForRemoval(@Suspended final AsyncResponse asyncResponse, @PathParam("jobId") String jobId,
+    @Consumes("application/json")
+    @Path("{jobId}/get-system-list")
+    public void getSystemList(@Suspended final AsyncResponse asyncResponse, @PathParam("jobId") String jobId,
                                             @Context UriInfo uriInfo) {
         asyncResponse.setTimeoutHandler(asyncResponse1 -> asyncResponse1
                 .resume(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("{\"status\":\"timeout\"}").build()));
-        asyncResponse.setTimeout(10, TimeUnit.SECONDS);
+        asyncResponse.setTimeout(100, TimeUnit.SECONDS);
 
         final String thisStep = findStepFromPath(uriInfo);
         final Job job = workflowService.findJob(UUID.fromString(jobId));
         final HostSelectionJobRepresentation jobRepresentation = new HostSelectionJobRepresentation(job);
 
         List<HostRepresentation> hosts = dataService.getVCenterHosts(jobId); //4 things
-        jobRepresentation.setHostRepresentations(hosts);
+        jobRepresentation.setNodes(hosts);
 
+        final NextStep nextStep = workflowService.findNextStep(job.getWorkflow(), thisStep);
+        if (nextStep != null) {
+            workflowService.advanceToNextStep(job, thisStep);
+            jobRepresentation.addLink(createNextStepLink(uriInfo, job, nextStep.getNextStep()), findMethodFromStep(nextStep.getNextStep()));
+        }
+
+        LOG.info("Completing response");
+        asyncResponse.resume(Response.ok(jobRepresentation).build());
+        LOG.debug("Completed response");
+    }
+
+    @POST
+    @Consumes("application/vnd.dellemc.nodes.list.remove+json")
+    @Path("{jobId}/select-node-for-removal")
+    public void selectNodeForRemoval(@Suspended final AsyncResponse asyncResponse, @PathParam("jobId") String jobId,
+            @Context UriInfo uriInfo, HostRepresentation hostRepresentation) {
+        asyncResponse.setTimeoutHandler(asyncResponse1 -> asyncResponse1
+                .resume(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("{\"status\":\"timeout\"}").build()));
+        asyncResponse.setTimeout(10, TimeUnit.SECONDS);
+
+        final String thisStep = findStepFromPath(uriInfo);
+        final Job job = workflowService.findJob(UUID.fromString(jobId));
+        final JobRepresentation jobRepresentation = new JobRepresentation(job);
+
+
+        job.setSelectedHostRepresentation(hostRepresentation);
         final NextStep nextStep = workflowService.findNextStep(job.getWorkflow(), thisStep);
         if (nextStep != null) {
             workflowService.advanceToNextStep(job, thisStep);
@@ -438,7 +463,7 @@ public class WorkflowResource {
 
 
     @POST
-    @Consumes("application/vnd.dellemc.scaleiomdm.endpoint+json")
+    @Consumes("application/vnd.dellemc.scaleio_mdm.endpoint+json")
     @Path("{jobId}/{step}")
     public Response captureScaleIOMDMCredentials(@PathParam("jobId") String jobId, @PathParam("step") String step, @Context UriInfo uriInfo,
                                    EndpointCredentials scaleIOMDMCredentials) {
@@ -447,12 +472,12 @@ public class WorkflowResource {
 
         final JobRepresentation jobRepresentation = new JobRepresentation(job);
 
-        try {
-            new URL(scaleIOMDMCredentials.getEndpointUrl());
-        } catch (MalformedURLException e) {
-            jobRepresentation.addLink(createRetryStepLink(uriInfo, job, thisStep));
-            return Response.status(Response.Status.BAD_REQUEST).entity(jobRepresentation).build();
-        }
+//        try {
+//            new URL(scaleIOMDMCredentials.getEndpointUrl());
+//        } catch (MalformedURLException e) {
+//            jobRepresentation.addLink(createRetryStepLink(uriInfo, job, thisStep));
+//            return Response.status(Response.Status.BAD_REQUEST).entity(jobRepresentation).build();
+//        }
 
         job.addScaleIOMDMCredentials(scaleIOMDMCredentials);
 
@@ -468,18 +493,17 @@ public class WorkflowResource {
     @POST
     @Path("{jobId}/start-scaleio-remove-workflow")
     public void scaleioRemoveWorkflow(@Suspended final AsyncResponse asyncResponse, @PathParam("jobId") String jobId,
-                                      @Context UriInfo uriInfo, HostRepresentation host) {
+                                      @Context UriInfo uriInfo) {
         asyncResponse.setTimeoutHandler(asyncResponse1 -> asyncResponse1
                 .resume(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("{\"status\":\"timeout\"}").build()));
         asyncResponse.setTimeout(10, TimeUnit.SECONDS);
 
         final String thisStep = findStepFromPath(uriInfo);
         final Job job = workflowService.findJob(UUID.fromString(jobId));
-        job.setSelectedHostRepresentation(host);
         final JobRepresentation jobRepresentation = new JobRepresentation(job);
 
         final LongRunning<OrderAckMessage, OrderInfo> longRunning = scaleIOService
-                .sioNodeRemove(job.getScaleIOCredentials(), job.getScaleIOMDMCredentials(), job.getId().toString(), host);
+                .sioNodeRemove(job.getCoprhdCredentials(), job.getScaleIOMDMCredentials(), job.getId().toString(), job.getSelectedHostRepresentation());
 
         job.addLongRunningTask(thisStep, longRunning);
 
@@ -577,7 +601,7 @@ public class WorkflowResource {
         final JobRepresentation jobRepresentation = new JobRepresentation(job);
 
         final HostRepresentation hostRepresentation = job.getSelectedHostRepresentation();
-        final String hostname = hostRepresentation.getHostName();
+        final String hostname = hostRepresentation.getHostname();
 
         final LongRunning<TaskAckMessage, HostMaintenanceModeResponse> longRunning = vcenterService
                 .requestHostMaintenanceModeEnable(job.getVcenterCredentials(), hostname);
@@ -615,7 +639,7 @@ public class WorkflowResource {
         final JobRepresentation jobRepresentation = new JobRepresentation(job);
 
         final HostRepresentation hostRepresentation = job.getSelectedHostRepresentation();
-        final String hostname = hostRepresentation.getHostName();
+        final String hostname = hostRepresentation.getHostname();
         //TODO find out where to get the cluster id from
         final String clusterId = "";
         final CompletableFuture<ClusterOperationResponse> clusterOperationResponseCompletableFuture = vcenterService
@@ -682,7 +706,7 @@ public class WorkflowResource {
         final JobRepresentation jobRepresentation = new JobRepresentation(job);
 
         final HostRepresentation hostRepresentation = job.getSelectedHostRepresentation();
-        final String hostname = hostRepresentation.getHostName();
+        final String hostname = hostRepresentation.getHostname();
 
         final CompletableFuture<VCenterHostPowerOperationStatus> vCenterHostPowerOperationStatusCompletableFuture = vcenterService
                 .requestHostPowerOff(job.getVcenterCredentials(), hostname);
@@ -981,10 +1005,10 @@ public class WorkflowResource {
         final String longRunningStep = "longRunning";
         final String longRunningPath = findPathFromStep(longRunningStep);
         final String type = findTypeFromStep(longRunningStep);
-        final String currentPath = findPathFromStep(currentLongRunningStep);
+//        final String currentPath = findPathFromStep(currentLongRunningStep);
 
         return Link.fromUriBuilder(uriInfo.getBaseUriBuilder().path("workflow").path(job.getId().toString()).path(longRunningPath)
-                .path(currentPath)).type(type)
+                .path(currentLongRunningStep)).type(type)
                 .rel("step-next").build();
     }
 
@@ -1008,7 +1032,8 @@ public class WorkflowResource {
         stepToPath.put("captureScaleIOEndpoint", "capture-scaleio-endpoint");
         stepToPath.put("startScaleIODataCollection", "start-scaleio-data-collection");
         stepToPath.put("startvCenterDataCollection", "start-vcenter-data-collection");
-        stepToPath.put("presentSystemListForRemoval", "present-system-list-remove");
+        stepToPath.put("getSystemList", "get-system-list");
+        stepToPath.put("selectNodeForRemoval", "select-node-for-removal");
         stepToPath.put("captureScaleIOMDMCredentials", "capture-scaleio-mdm-credentials");
         stepToPath.put("startSIORemoveWorkflow", "start-scaleio-remove-workflow");
         stepToPath.put("destroyScaleIOVM", "destroy-scaleio-vm");
@@ -1040,7 +1065,8 @@ public class WorkflowResource {
         stepToPath.put("capture-scaleio-endpoint", "captureScaleIOEndpoint");
         stepToPath.put("start-scaleio-data-collection", "startScaleIODataCollection");
         stepToPath.put("start-vcenter-data-collection", "startvCenterDataCollection");
-        stepToPath.put("present-system-list-remove", "presentSystemListForRemoval");
+        stepToPath.put("get-system-list", "getSystemList");
+        stepToPath.put("select-node-for-removal", "selectNodeForRemoval");
         stepToPath.put("capture-scaleio-mdm-credentials", "captureScaleIOMDMCredentials");
         stepToPath.put("start-scaleio-remove-workflow", "startSIORemoveWorkflow");
         stepToPath.put("destroy-scaleio-vm", "destroyScaleIOVM");
@@ -1072,7 +1098,7 @@ public class WorkflowResource {
         stepToType.put("capturevCenterEndpoint", "application/vnd.dellemc.vcenter.endpoint+json");
         stepToType.put("captureScaleIOEndpoint", "application/vnd.dellemc.scaleio.endpoint+json");
         stepToType.put("captureScaleIOMDMCredentials", "application/vnd.dellemc.scaleio_mdm.endpoint+json");
-        stepToType.put("presentSystemListForRemoval","application/vnd.dellemc.nodes.list.remove+json");
+        stepToType.put("selectNodeForRemoval","application/vnd.dellemc.nodes.list.remove+json");
 
         return stepToType.getOrDefault(step, "application/json");
     }

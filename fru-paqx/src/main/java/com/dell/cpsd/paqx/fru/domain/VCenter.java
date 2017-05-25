@@ -23,6 +23,11 @@ public class VCenter {
     @Column(name = "VCENTER_NAME")
     private String name;
 
+    public VCenter()
+    {
+
+    }
+
     public VCenter(String id, String name) {
         this.id = id;
         this.name = name;
@@ -30,6 +35,9 @@ public class VCenter {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "vCenter", orphanRemoval = true)
     private List<Datacenter> datacenterList = new ArrayList<>();
+
+    @OneToOne(optional = false, mappedBy = "vcenter", cascade = CascadeType.ALL)
+    private FruJob job;
 
     public Long getUuid() {
         return uuid;

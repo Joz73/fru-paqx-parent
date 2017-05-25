@@ -35,8 +35,9 @@ public class WorkflowServiceImpl implements WorkflowService {
         workflowSteps.put("capturevCenterEndpoint", new NextStep("captureScaleIOEndpoint"));
         workflowSteps.put("captureScaleIOEndpoint", new NextStep("startScaleIODataCollection"));
         workflowSteps.put("startScaleIODataCollection", new NextStep("startvCenterDataCollection"));
-        workflowSteps.put("startvCenterDataCollection", new NextStep("presentSystemListForRemoval"));
-        workflowSteps.put("presentSystemListForRemoval", new NextStep("captureScaleIOMDMCredentials"));
+        workflowSteps.put("startvCenterDataCollection", new NextStep("getSystemList"));
+        workflowSteps.put("getSystemList", new NextStep("selectNodeForRemoval"));
+        workflowSteps.put("selectNodeForRemoval", new NextStep("captureScaleIOMDMCredentials"));
         workflowSteps.put("captureScaleIOMDMCredentials", new NextStep("startSIORemoveWorkflow"));
         workflowSteps.put("startSIORemoveWorkflow", new NextStep("destroyScaleIOVM"));
         workflowSteps.put("destroyScaleIOVM", new NextStep("enterMaintenanceMode"));

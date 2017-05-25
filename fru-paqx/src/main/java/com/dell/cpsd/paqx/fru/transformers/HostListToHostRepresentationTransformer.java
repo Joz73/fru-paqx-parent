@@ -45,7 +45,7 @@ public class HostListToHostRepresentationTransformer
             managementIP = device.getIp();
         }
 
-        return new HostRepresentation(host.getName(),"abcd", managementIP, "OK");
+        return new HostRepresentation(host.getName(),"abcd", managementIP, "OK", host.getId());
 
         //TODO: It should look something like this
         //return new HostRepresentation(x.getName(), x.getSerialNumber(), managementIP, x.getStatus());

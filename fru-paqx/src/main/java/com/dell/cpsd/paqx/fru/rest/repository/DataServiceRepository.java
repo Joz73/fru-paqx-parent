@@ -31,8 +31,7 @@ public interface DataServiceRepository
     List<Host> getVCenterHosts(String jobId);
 
     @Transactional
-    ScaleIORemoveDto getScaleIORemoveDtoForSelectedHost(String jobId, HostRepresentation selectedHost, String userName, String password,
-                                                        String endpointString);
+    ScaleIORemoveDto getScaleIORemoveDtoForSelectedHost(String jobId, HostRepresentation selectedHost, String userName, String password);
 
     @Transactional
     List<DestroyVMDto> getDestroyVMDtos(String jobId, HostRepresentation selectedHost, String vCenterUserName, String vCenterPassword,

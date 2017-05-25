@@ -27,8 +27,7 @@ import javax.persistence.Table;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "SCALEIO_IP")
-@DiscriminatorColumn(name = "SCALEIO_IP_TYPE")
-public abstract class ScaleIOIP
+public class ScaleIOIP
 {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -37,6 +36,9 @@ public abstract class ScaleIOIP
 
     @Column(name = "IP")
     private String ip;
+
+    @Column(name = "SCALEIO_IP_TYPE")
+    private String type;
 
     @ManyToOne(cascade = CascadeType.ALL)
     public ScaleIOData scaleIOData;
@@ -72,6 +74,16 @@ public abstract class ScaleIOIP
     public void setIp(final String ip)
     {
         this.ip = ip;
+    }
+
+    public String getType()
+    {
+        return type;
+    }
+
+    public void setType(final String type)
+    {
+        this.type = type;
     }
 
     public ScaleIOData getScaleIOData()

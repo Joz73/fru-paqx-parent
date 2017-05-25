@@ -6,8 +6,8 @@
 package com.dell.cpsd.paqx.fru.service;
 
 
+import com.dell.cpsd.paqx.fru.domain.VCenter;
 import com.dell.cpsd.paqx.fru.dto.FRUSystemData;
-import com.dell.cpsd.paqx.fru.rest.dto.vCenterSystemProperties;
 import com.dell.cpsd.paqx.fru.rest.representation.HostRepresentation;
 import com.dell.cpsd.storage.capabilities.api.SIONodeRemoveRequestMessage;
 import com.dell.cpsd.storage.capabilities.api.ScaleIOSystemDataRestRep;
@@ -25,12 +25,12 @@ public interface DataService {
 
     void saveScaleioData(final UUID jobId, final ScaleIOSystemDataRestRep scaleIOSystemDataRestRep);
 
-    void saveVcenterData(UUID jobId, vCenterSystemProperties vcenterSystemProperties);
+    void saveVcenterData(final UUID jobId, final VCenter vCenter);
 
     List<HostRepresentation> getVCenterHosts(String jobId);
 
     SIONodeRemoveRequestMessage getSDSHostsToRemoveFromHostRepresentation(String jobId, HostRepresentation selectedHost,
-            final String scaleIOEndpoint, final String mdmPassword, final String mdmUserName);
+            final String mdmPassword, final String mdmUserName);
 
     List<DestroyVMRequestMessage> getDestroyVMRequestMessage(String jobId, HostRepresentation selectedHost, String vCenterEndpoint,
             String vCenterPassword, String vCenterUserName);

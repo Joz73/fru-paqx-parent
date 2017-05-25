@@ -10,6 +10,7 @@ import com.dell.cpsd.paqx.fru.domain.FruJob;
 import com.dell.cpsd.paqx.fru.domain.Host;
 import com.dell.cpsd.paqx.fru.domain.ScaleIOData;
 import com.dell.cpsd.paqx.fru.domain.VCenter;
+import com.dell.cpsd.paqx.fru.domain.VirtualMachine;
 import com.dell.cpsd.paqx.fru.dto.DestroyVMDto;
 import com.dell.cpsd.paqx.fru.dto.ScaleIORemoveDto;
 import com.dell.cpsd.paqx.fru.dto.ScaleIORemoveDataDto;
@@ -102,6 +103,7 @@ public class H2DataServiceRepository implements DataServiceRepository
             fruJob.setVcenter(data);
             entityManager.merge(fruJob);
         }
+        entityManager.flush();
         return fruJob.getUuid();
     }
 
@@ -145,37 +147,91 @@ public class H2DataServiceRepository implements DataServiceRepository
 
     private List<Object[]> correlateSDSDataWithScaleIOData(final HostRepresentation selectedHost)
     {
+//        String query =
+//                "SELECT scaleio_ip_list.sds_sds_uuid, scaleio_sds.sds_name,vm_ip.ip_address, virtual_machine.uuid, virtual_machine.host_uuid, virtual_machine.vm_id "
+//                        + "FROM vm_ip " + "JOIN scaleio_ip_list ON scaleio_ip_list.sds_ip = vm_ip.ip_address "
+//                        + "JOIN scaleio_sds ON scaleio_ip_list.sds_sds_uuid = scaleio_sds.sds_uuid "
+//                        + "JOIN vm_guest_network ON vm_ip.vmnetwork_uuid = vm_guest_network.uuid "
+//                        + "JOIN virtual_machine ON vm_guest_network.virtualmachine_uuid = virtual_machine.uuid "
+//                        + "where virtual_machine.host_uuid in (select host_uuid from host where host_name='" + selectedHost.getHostname()
+//                        + "');";
+
         String query =
-                "SELECT scaleio_ip_list.sds_sds_uuid, scaleio_sds.sds_name,vm_ip.ip_address, virtual_machine.uuid, virtual_machine.host_uuid, virtual_machine.vm_id "
-                        + "FROM vm_ip " + "JOIN scaleio_ip_list ON scaleio_ip_list.sds_ip = vm_ip.ip_address "
-                        + "JOIN scaleio_sds ON scaleio_ip_list.sds_sds_uuid = scaleio_sds.sds_uuid "
-                        + "JOIN vm_guest_network ON vm_ip.vmnetwork_uuid = vm_guest_network.uuid "
-                        + "JOIN virtual_machine ON vm_guest_network.virtualmachine_uuid = virtual_machine.uuid "
-                        + "where virtual_machine.host_uuid in (select host_uuid from host where host_name='" + selectedHost.getHostName()
-                        + "');";
+                "SELECT scaleio_ip_list.sds_sds_uuid AS ScaleIO_SDS_ID, virtual_machine.vm_id AS VCenter_VM_ID, vm_ip.ip_address AS IpAddress,  host.host_id as VCenter_Host_ID\n"
+                        + "FROM vm_ip \n" + "JOIN scaleio_ip_list ON scaleio_ip_list.sds_ip = vm_ip.ip_address\n"
+                        + "JOIN vm_guest_network ON vm_ip.vmnetwork_uuid = vm_guest_network.uuid\n"
+                        + "JOIN virtual_machine ON vm_guest_network.virtualmachine_uuid = virtual_machine.uuid\n"
+                        + "JOIN host ON virtual_machine.host_uuid = host.uuid\n" + "WHERE host.host_name = '" + selectedHost.getHostname() + "';";
 
         Query q = entityManager.createNativeQuery(query);
         return q.getResultList();
     }
 
-    @Override
-    public ScaleIORemoveDto getScaleIORemoveDtoForSelectedHost(final String jobId, final HostRepresentation selectedHost, String userName,
-                                                               String password, String endpointString)
+    private List<Object[]> queryScaleIOMdms()
     {
-        ScaleIORemoveDto dto = new ScaleIORemoveDto(userName, password, getPortFromEndpoint(endpointString), 443, getIPAddressFromEndpoint(endpointString));
+        String query =
+                "SELECT * FROM SCALEIO_SDS_ELEMENT_INFO  WHERE SDS_ELEMENT_ROLE = 'Manager' ;";
+
+        Query q = entityManager.createNativeQuery(query);
+        return q.getResultList();
+    }
+    private List<Object[]> queryScaleIOElementIPbyID(String id)
+    {
+        String query =
+                "SELECT * FROM SCALEIO_IP WHERE SDSELEMENTINFO_SDS_ELEMENT_UUID = '" + id +"';";
+
+        Query q = entityManager.createNativeQuery(query);
+        return q.getResultList();
+    }
+
+
+    private Object getVmIPbyVmID(final String vmID)
+    {
+        String query =
+                "SELECT vm_ip.ip_address\n" + "FROM VM_IP\n" + "JOIN vm_guest_network ON vm_ip.vmnetwork_uuid = vm_guest_network.uuid\n"
+                        + "JOIN virtual_machine ON vm_guest_network.virtualmachine_uuid = virtual_machine.uuid\n"
+                        + "WHERE VIRTUAL_MACHINE.VM_ID = '" + vmID + "' AND VM_IP.IP_ADDRESS LIKE '10.%';";
+
+        Query q = entityManager.createNativeQuery(query);
+        return q.getSingleResult();
+    }
+
+    @Override
+    public ScaleIORemoveDto getScaleIORemoveDtoForSelectedHost(final String jobId, final HostRepresentation selectedHost, String mdmUsername,
+                                                               String mdmPassword)
+    {
+        // TODO: This is all going to change with updates to ScaleIO Ansible Playbooks
+        //Overwritten outside in ScaleioServiceImpl
+        ScaleIORemoveDto dto = new ScaleIORemoveDto("", "", 0, 0, "");
         StringBuilder sdsList = new StringBuilder();
         StringBuilder mdmList = new StringBuilder();
         StringBuilder sdcList = new StringBuilder();
+
+        mdmList.append("[");
+        for (Object[] columns : queryScaleIOMdms())
+        {
+            String elementUUID = columns[1].toString();
+            List<Object[]> iprows = queryScaleIOElementIPbyID(elementUUID);
+            String mdm = "{'ip':'" + iprows.get(2)[2] + "','user':'" + mdmUsername + "','pass':'" + mdmPassword + "','data_ip':'" + iprows.get(0)[2] + "'},";
+            mdmList.append(mdm);
+
+        }
+        mdmList.append("]");
+
+
+        String queryVmId = "";
         for (Object[] columns : correlateSDSDataWithScaleIOData(selectedHost))
         {
-            String sdsUuid = (String) columns[0];
-            String sdsName = (String) columns[1];
-            String vmIpAddress = (String) columns[2];
-            String vmUuid = (String) columns[3];
-            String hostUuid = (String) columns[4];
-
-            sdsList.append(sdsName);
+            String sdsUuid =  columns[0].toString();
+            String vmUuid = columns[1].toString();
+            String vmIpAddress = columns[2].toString();
+            String hostUuid = columns[3].toString();
+            queryVmId = vmUuid;
         }
+
+        String sds = "[{'ip':'" + getVmIPbyVmID(queryVmId).toString() + "','user':'" + mdmUsername + "','pass':'" + mdmPassword + "'}]";
+        sdsList.append(sds);
+        sdcList.append("[]");
 
         ScaleIORemoveDataDto s = new ScaleIORemoveDataDto("eth0", "empty", mdmList.toString(), sdsList.toString(), sdcList.toString());
         dto.setScaleIORemoveDataDto(s);

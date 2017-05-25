@@ -88,12 +88,14 @@ public class FruServiceImpl implements FruService
 
         amqpAdmin.declareBinding(BindingBuilder.bind(responseQueue).to(responseExchange).with(responseRoutingKey));
 
-        final String requestAckRoutingKey = amqpProperties.get("request-ack-routing-key");
+        String requestAckRoutingKey = amqpProperties.get("request-ack-routing-key");
         if (requestAckRoutingKey != null)
         {
             if (!requestAckRoutingKey.isEmpty())
             {
+                requestAckRoutingKey = requestAckRoutingKey.replace("{replyTo}", "." + replyTo);
                 amqpAdmin.declareBinding(BindingBuilder.bind(responseQueue).to(responseExchange).with(requestAckRoutingKey));
+                LOG.debug("Adding binding {} {}", responseExchange.getName(), requestAckRoutingKey);
             }
         }
 
