@@ -13,31 +13,29 @@ import com.dell.cpsd.virtualization.capabilities.api.ClusterOperationResponseMes
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static com.dell.cpsd.paqx.fru.amqp.config.RabbitConfig.EXCHANGE_FRU_RESPONSE;
 
 /**
- * TODO: Document usage.
+ * VCenter Cluster Operations Response Handler
  * <p>
  * Copyright &copy; 2017 Dell Inc. or its subsidiaries.  All Rights Reserved.
  * </p>
  *
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class VCenterClusterOperationsResponseHandler extends DefaultMessageHandler<ClusterOperationResponseMessage>
         implements AsyncAcknowledgement<ClusterOperationResponse>
 {
-    private static final Logger                                                   LOG           = LoggerFactory
+    private static final Logger                                        LOG                 = LoggerFactory
             .getLogger(VCenterClusterOperationsResponseHandler.class);
-    private              Map<String, CompletableFuture<ClusterOperationResponse>> asyncRequests = new HashMap<>();
+    private final        AsyncRequestHandler<ClusterOperationResponse> asyncRequestHandler = new AsyncRequestHandler<>();
 
     public VCenterClusterOperationsResponseHandler(ErrorTransformer<HasMessageProperties<?>> errorTransformer)
     {
-        super(ClusterOperationResponseMessage.class, new DefaultMessageValidator<>(), EXCHANGE_FRU_RESPONSE, errorTransformer);
+        super(ClusterOperationResponseMessage.class, new DefaultMessageValidator<>(), "", errorTransformer);
     }
 
     @Override
@@ -49,25 +47,13 @@ public class VCenterClusterOperationsResponseHandler extends DefaultMessageHandl
         final ClusterOperationResponse clusterOperationResponse = new ClusterOperationResponse(
                 clusterOperationResponseMessage.getStatus().value());
 
-        final CompletableFuture<ClusterOperationResponse> completableFuture = asyncRequests.get(correlationId);
-
-        LOG.info("Completing expectation for  {} {}", correlationId, completableFuture);
-
-        if (completableFuture != null)
-        {
-            final boolean complete = completableFuture.complete(clusterOperationResponse);
-            LOG.info("Completed expectation for  {} {} {}", correlationId, completableFuture, complete);
-            asyncRequests.remove(correlationId);
-        }
+        asyncRequestHandler.complete(correlationId, clusterOperationResponse);
     }
 
     @Override
     public CompletableFuture<ClusterOperationResponse> register(final String correlationId)
     {
         LOG.info("Setting expectation for  {}", correlationId);
-        CompletableFuture<ClusterOperationResponse> completableFuture = new CompletableFuture<>();
-        completableFuture.whenComplete((systemRest, throwable) -> asyncRequests.remove(correlationId));
-        asyncRequests.put(correlationId, completableFuture);
-        return completableFuture;
+        return asyncRequestHandler.register(correlationId);
     }
 }

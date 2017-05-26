@@ -170,7 +170,7 @@ public class Job
         for (final String longRunningTask : longRunningTasks.keySet())
         {
             final Set<String> outstandingTasks = longRunningTasks.get(longRunningTask);
-            if (outstandingTasks != null && outstandingTasks.size() > 0)
+            if (outstandingTasks != null && !outstandingTasks.isEmpty())
             {
                 return true;
             }

@@ -23,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
  * Dell EMC Confidential/Proprietary Information
  * </p>
  *
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class vCenterHostMaintenanceModeResponseHandler extends DefaultMessageHandler<HostMaintenanceModeResponseMessage>

@@ -472,13 +472,6 @@ public class WorkflowResource {
 
         final JobRepresentation jobRepresentation = new JobRepresentation(job);
 
-//        try {
-//            new URL(scaleIOMDMCredentials.getEndpointUrl());
-//        } catch (MalformedURLException e) {
-//            jobRepresentation.addLink(createRetryStepLink(uriInfo, job, thisStep));
-//            return Response.status(Response.Status.BAD_REQUEST).entity(jobRepresentation).build();
-//        }
-
         job.addScaleIOMDMCredentials(scaleIOMDMCredentials);
 
         final NextStep nextStep = workflowService.findNextStep(job.getWorkflow(), thisStep);
@@ -557,33 +550,27 @@ public class WorkflowResource {
         final Job job = workflowService.findJob(UUID.fromString(jobId));
         final JobRepresentation jobRepresentation = new JobRepresentation(job);
 
-        final CompletableFuture<DestroyVmResponse> vmDeletionResponse = vcenterService
+        final LongRunning<TaskAckMessage, DestroyVmResponse> longRunning = vcenterService
                 .requestVmDeletion(job.getVcenterCredentials(), job.getId().toString(), hostRepresentation);
-        vmDeletionResponse.thenAccept(destroyVmResponse ->
+
+        job.addLongRunningTask(thisStep, longRunning);
+
+        //TODO: Bug for now, needs to take two lambdas that advances to next step for success and doesn't for failure
+        longRunning.onAcknowledged(taskAckMessage ->
         {
-            LOG.info("Destroy VM Response Message Status {}", destroyVmResponse);
+            LOG.debug("Long running task acknowledged: [{}]", taskAckMessage);
+            jobRepresentation.addLink(createLongRunningNextStepLink(uriInfo, job, thisStep), findMethodFromStep("longRunning"));
+            asyncResponse.resume(Response.ok(jobRepresentation).build());
+        }).onCompleted(destroyVmResponse ->
+        {
             if (DestroyVMResponseMessage.Status.SUCCESS.value().equals(destroyVmResponse.getStatus()))
             {
-                final NextStep nextStep = workflowService.findNextStep(job.getWorkflow(), thisStep);
-                if (nextStep != null)
-                {
-                    workflowService.advanceToNextStep(job, thisStep);
-                    jobRepresentation
-                            .addLink(createNextStepLink(uriInfo, job, nextStep.getNextStep()), findMethodFromStep(nextStep.getNextStep()));
-                }
-
-                asyncResponse.resume(Response.ok(jobRepresentation).build());
+                workflowService.advanceToNextStep(job, thisStep);
             }
             else
             {
-                jobRepresentation.addLink(createRetryStepLink(uriInfo, job, thisStep));
-                jobRepresentation.setLastResponse(destroyVmResponse.getStatus());
-                asyncResponse.resume(Response.status(Response.Status.BAD_REQUEST).build());
-            }
 
-            LOG.info("Completing response");
-            asyncResponse.resume(Response.ok(jobRepresentation).build());
-            LOG.debug("Completed response");
+            }
         });
     }
 
@@ -605,6 +592,8 @@ public class WorkflowResource {
 
         final LongRunning<TaskAckMessage, HostMaintenanceModeResponse> longRunning = vcenterService
                 .requestHostMaintenanceModeEnable(job.getVcenterCredentials(), hostname);
+
+        job.addLongRunningTask(thisStep, longRunning);
 
         //TODO: Bug for now, needs to take two lambdas that advances to next step for success and doesn't for failure
         longRunning.onAcknowledged(taskAckMessage ->
@@ -628,44 +617,40 @@ public class WorkflowResource {
     @POST
     @Path("{jobId}/remove-host-from-vcenter")
     public void removeHostFromVCenter(@Suspended final AsyncResponse asyncResponse, @PathParam("jobId") String jobId,
-                                      @Context UriInfo uriInfo) {
+            @Context UriInfo uriInfo)
+    {
         asyncResponse.setTimeoutHandler(asyncResponse1 -> asyncResponse1
                 .resume(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("{\"status\":\"timeout\"}").build()));
         asyncResponse.setTimeout(10, TimeUnit.SECONDS);
 
-        //
         final String thisStep = findStepFromPath(uriInfo);
         final Job job = workflowService.findJob(UUID.fromString(jobId));
         final JobRepresentation jobRepresentation = new JobRepresentation(job);
 
         final HostRepresentation hostRepresentation = job.getSelectedHostRepresentation();
         final String hostname = hostRepresentation.getHostname();
-        //TODO find out where to get the cluster id from
-        final String clusterId = "";
-        final CompletableFuture<ClusterOperationResponse> clusterOperationResponseCompletableFuture = vcenterService
-                .requestHostRemoval(job.getVcenterCredentials(), hostname, clusterId);
-        clusterOperationResponseCompletableFuture.thenAccept(clusterOperationResponse ->
+
+        final LongRunning<TaskAckMessage, ClusterOperationResponse> longRunning = vcenterService
+                .requestHostRemoval(job.getVcenterCredentials(), hostname);
+
+        job.addLongRunningTask(thisStep, longRunning);
+
+        //TODO: Bug for now, needs to take two lambdas that advances to next step for success and doesn't for failure
+        longRunning.onAcknowledged(taskAckMessage ->
         {
-            LOG.info("Host Removal from VCenter Cluster Response: [{}]", clusterOperationResponse);
-
-            if (ClusterOperationResponseMessage.Status.SUCCESS.value().equals(clusterOperationResponse.getStatus())) {
-                final NextStep nextStep = workflowService.findNextStep(job.getWorkflow(), thisStep);
-                if (nextStep != null) {
-                    workflowService.advanceToNextStep(job, thisStep);
-                    jobRepresentation
-                            .addLink(createNextStepLink(uriInfo, job, nextStep.getNextStep()), findMethodFromStep(nextStep.getNextStep()));
-                }
-
-                asyncResponse.resume(Response.ok(jobRepresentation).build());
-            } else {
-                jobRepresentation.addLink(createRetryStepLink(uriInfo, job, thisStep));
-                jobRepresentation.setLastResponse(clusterOperationResponse.getStatus());
-                asyncResponse.resume(Response.status(Response.Status.BAD_REQUEST).build());
-            }
-
-            LOG.info("Completing response");
+            LOG.debug("Long running task acknowledged for operation Host Removal: [{}]", taskAckMessage);
+            jobRepresentation.addLink(createLongRunningNextStepLink(uriInfo, job, thisStep), findMethodFromStep("longRunning"));
             asyncResponse.resume(Response.ok(jobRepresentation).build());
-            LOG.debug("Completed response");
+        }).onCompleted(clusterOperationResponse ->
+        {
+            if (ClusterOperationResponseMessage.Status.SUCCESS.value().equals(clusterOperationResponse.getStatus()))
+            {
+                workflowService.advanceToNextStep(job, thisStep);
+            }
+            else
+            {
+
+            }
         });
     }
 
@@ -696,7 +681,8 @@ public class WorkflowResource {
     @POST
     @Path("{jobId}/power-off-esxi-host-for-removal")
     public void powerOffEsxiHostForRemoval(@Suspended final AsyncResponse asyncResponse, @PathParam("jobId") String jobId,
-                                           @Context UriInfo uriInfo) {
+            @Context UriInfo uriInfo)
+    {
         asyncResponse.setTimeoutHandler(asyncResponse1 -> asyncResponse1
                 .resume(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("{\"status\":\"timeout\"}").build()));
         asyncResponse.setTimeout(10, TimeUnit.SECONDS);
@@ -708,30 +694,27 @@ public class WorkflowResource {
         final HostRepresentation hostRepresentation = job.getSelectedHostRepresentation();
         final String hostname = hostRepresentation.getHostname();
 
-        final CompletableFuture<VCenterHostPowerOperationStatus> vCenterHostPowerOperationStatusCompletableFuture = vcenterService
+        final LongRunning<TaskAckMessage, VCenterHostPowerOperationStatus> longRunning = vcenterService
                 .requestHostPowerOff(job.getVcenterCredentials(), hostname);
-        vCenterHostPowerOperationStatusCompletableFuture.thenAccept(hostPowerOperationStatus ->
+
+        job.addLongRunningTask(thisStep, longRunning);
+
+        //TODO: Bug for now, needs to take two lambdas that advances to next step for success and doesn't for failure
+        longRunning.onAcknowledged(taskAckMessage ->
         {
-            LOG.info("Host Power Off Response: [{}]", hostPowerOperationStatus);
-
-            if (HostPowerOperationResponseMessage.Status.SUCCESS.value().equals(hostPowerOperationStatus.getStatus())) {
-                final NextStep nextStep = workflowService.findNextStep(job.getWorkflow(), thisStep);
-                if (nextStep != null) {
-                    workflowService.advanceToNextStep(job, thisStep);
-                    jobRepresentation
-                            .addLink(createNextStepLink(uriInfo, job, nextStep.getNextStep()), findMethodFromStep(nextStep.getNextStep()), 0);
-                }
-
-                asyncResponse.resume(Response.ok(jobRepresentation).build());
-            } else {
-                jobRepresentation.addLink(createRetryStepLink(uriInfo, job, thisStep));
-                jobRepresentation.setLastResponse(hostPowerOperationStatus.getStatus());
-                asyncResponse.resume(Response.status(Response.Status.BAD_REQUEST).build());
-            }
-
-            LOG.info("Completing response");
+            LOG.debug("Long running task acknowledged: [{}]", taskAckMessage);
+            jobRepresentation.addLink(createLongRunningNextStepLink(uriInfo, job, thisStep), findMethodFromStep("longRunning"));
             asyncResponse.resume(Response.ok(jobRepresentation).build());
-            LOG.debug("Completed response");
+        }).onCompleted(hostPowerOperationStatus ->
+        {
+            if (HostPowerOperationResponseMessage.Status.SUCCESS.value().equals(hostPowerOperationStatus.getStatus()))
+            {
+                workflowService.advanceToNextStep(job, thisStep);
+            }
+            else
+            {
+
+            }
         });
     }
 
@@ -832,11 +815,11 @@ public class WorkflowResource {
 
     @POST
     @Path("{jobId}/add-host-to-vcenter")
-    public void addHostTovCenter(@Suspended final AsyncResponse asyncResponse, @PathParam("jobId") String jobId, @Context UriInfo uriInfo) {
+    public void addHostTovCenter(@Suspended final AsyncResponse asyncResponse, @PathParam("jobId") String jobId, @Context UriInfo uriInfo)
+    {
         asyncResponse.setTimeoutHandler(asyncResponse1 -> asyncResponse1
                 .resume(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("{\"status\":\"timeout\"}").build()));
         asyncResponse.setTimeout(10, TimeUnit.SECONDS);
-
 
         final String thisStep = findStepFromPath(uriInfo);
         final Job job = workflowService.findJob(UUID.fromString(jobId));
@@ -848,30 +831,28 @@ public class WorkflowResource {
         final String clusterId = "";
         final String hostUsername = "";
         final String hostPassword = "";
-        final CompletableFuture<ClusterOperationResponse> clusterOperationResponseCompletableFuture = vcenterService
+
+        final LongRunning<TaskAckMessage, ClusterOperationResponse> longRunning = vcenterService
                 .requestHostAddition(job.getVcenterCredentials(), hostname, clusterId, hostUsername, hostPassword);
-        clusterOperationResponseCompletableFuture.thenAccept(clusterOperationResponse ->
+
+        job.addLongRunningTask(thisStep, longRunning);
+
+        //TODO: Bug for now, needs to take two lambdas that advances to next step for success and doesn't for failure
+        longRunning.onAcknowledged(taskAckMessage ->
         {
-            LOG.info("Host Addition to the VCenter Cluster Response: [{}]", clusterOperationResponse);
-
-            if (ClusterOperationResponseMessage.Status.SUCCESS.value().equals(clusterOperationResponse.getStatus())) {
-                final NextStep nextStep = workflowService.findNextStep(job.getWorkflow(), thisStep);
-                if (nextStep != null) {
-                    workflowService.advanceToNextStep(job, thisStep);
-                    jobRepresentation
-                            .addLink(createNextStepLink(uriInfo, job, nextStep.getNextStep()), findMethodFromStep(nextStep.getNextStep()), 0);
-                }
-
-                asyncResponse.resume(Response.ok(jobRepresentation).build());
-            } else {
-                jobRepresentation.addLink(createRetryStepLink(uriInfo, job, thisStep), 0);
-                jobRepresentation.setLastResponse(clusterOperationResponse.getStatus());
-                asyncResponse.resume(Response.status(Response.Status.BAD_REQUEST).build());
-            }
-
-            LOG.info("Completing response");
+            LOG.debug("Long running task acknowledged for operation Host Addition: [{}]", taskAckMessage);
+            jobRepresentation.addLink(createLongRunningNextStepLink(uriInfo, job, thisStep), findMethodFromStep("longRunning"));
             asyncResponse.resume(Response.ok(jobRepresentation).build());
-            LOG.debug("Completed response");
+        }).onCompleted(clusterOperationResponse ->
+        {
+            if (ClusterOperationResponseMessage.Status.SUCCESS.value().equals(clusterOperationResponse.getStatus()))
+            {
+                workflowService.advanceToNextStep(job, thisStep);
+            }
+            else
+            {
+
+            }
         });
     }
 

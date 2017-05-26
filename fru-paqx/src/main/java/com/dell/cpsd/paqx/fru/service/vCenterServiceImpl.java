@@ -9,12 +9,10 @@ import com.dell.cpsd.hdp.capability.registry.api.Capability;
 import com.dell.cpsd.hdp.capability.registry.client.CapabilityRegistryException;
 import com.dell.cpsd.hdp.capability.registry.client.ICapabilityRegistryLookupManager;
 import com.dell.cpsd.paqx.fru.amqp.consumer.handler.AsyncAcknowledgement;
-import com.dell.cpsd.paqx.fru.amqp.consumer.handler.VCenterTaskAckResponseHandler;
 import com.dell.cpsd.paqx.fru.domain.VCenter;
 import com.dell.cpsd.paqx.fru.dto.ConsulRegistryResult;
 import com.dell.cpsd.paqx.fru.rest.dto.EndpointCredentials;
 import com.dell.cpsd.paqx.fru.rest.dto.VCenterHostPowerOperationStatus;
-import com.dell.cpsd.paqx.fru.rest.dto.vCenterSystemProperties;
 import com.dell.cpsd.paqx.fru.rest.dto.vcenter.ClusterOperationResponse;
 import com.dell.cpsd.paqx.fru.rest.dto.vcenter.DestroyVmResponse;
 import com.dell.cpsd.paqx.fru.rest.dto.vcenter.HostMaintenanceModeResponse;
@@ -23,17 +21,12 @@ import com.dell.cpsd.paqx.fru.valueobject.LongRunning;
 import com.dell.cpsd.service.common.client.exception.ServiceTimeoutException;
 import com.dell.cpsd.virtualization.capabilities.api.ClusterOperationRequest;
 import com.dell.cpsd.virtualization.capabilities.api.ClusterOperationRequestMessage;
-import com.dell.cpsd.virtualization.capabilities.api.ClusterOperationResponseMessage;
 import com.dell.cpsd.virtualization.capabilities.api.ConsulRegisterRequestMessage;
 import com.dell.cpsd.virtualization.capabilities.api.Credentials;
 import com.dell.cpsd.virtualization.capabilities.api.DestroyVMRequestMessage;
-import com.dell.cpsd.virtualization.capabilities.api.DestroyVMResponseMessage;
 import com.dell.cpsd.virtualization.capabilities.api.DiscoveryRequestInfoMessage;
-import com.dell.cpsd.virtualization.capabilities.api.DiscoveryResponseInfoMessage;
 import com.dell.cpsd.virtualization.capabilities.api.HostMaintenanceModeRequestMessage;
-import com.dell.cpsd.virtualization.capabilities.api.HostMaintenanceModeResponseMessage;
 import com.dell.cpsd.virtualization.capabilities.api.HostPowerOperationRequestMessage;
-import com.dell.cpsd.virtualization.capabilities.api.HostPowerOperationResponseMessage;
 import com.dell.cpsd.virtualization.capabilities.api.MaintenanceModeRequest;
 import com.dell.cpsd.virtualization.capabilities.api.MessageProperties;
 import com.dell.cpsd.virtualization.capabilities.api.PowerOperationRequest;
@@ -65,17 +58,17 @@ public class vCenterServiceImpl implements vCenterService
 {
     private static final Logger LOG = LoggerFactory.getLogger(vCenterServiceImpl.class);
 
-    private final ICapabilityRegistryLookupManager               capabilityRegistryLookupManager;
-    private final RabbitTemplate                                 rabbitTemplate;
-    private final AmqpAdmin                                               amqpAdmin;
-    private final Queue                                                   responseQueue;
-    private final AsyncAcknowledgement<VCenter>                            vCenterAsyncAcknowledgement;
-    private final AsyncAcknowledgement<ConsulRegistryResult>               consulRegisterAsyncAcknowledgement;
+    private final ICapabilityRegistryLookupManager                      capabilityRegistryLookupManager;
+    private final RabbitTemplate                                        rabbitTemplate;
+    private final AmqpAdmin                                             amqpAdmin;
+    private final Queue                                                 responseQueue;
+    private final AsyncAcknowledgement<VCenter>                         vCenterAsyncAcknowledgement;
+    private final AsyncAcknowledgement<ConsulRegistryResult>            consulRegisterAsyncAcknowledgement;
     private final AsyncAcknowledgement<DestroyVmResponse>               vmDeletionAsyncAcknowledgement;
     private final AsyncAcknowledgement<VCenterHostPowerOperationStatus> vCenterHostPowerAsyncAcknowledgement;
     private final AsyncAcknowledgement<HostMaintenanceModeResponse>     hostMaintenanceModeAsyncAcknowledgement;
     private final AsyncAcknowledgement<ClusterOperationResponse>        vcenterClusterOperationAsyncAcknowledgement;
-    private final AsyncAcknowledgement<TaskAckMessage>   vcenterTaskAckAsyncAcknowledgement;
+    private final AsyncAcknowledgement<TaskAckMessage>                  vcenterTaskAckAsyncAcknowledgement;
     private final String                                                replyTo;
     private final FruService                                            fruService;
     private final DataService                                           dataService;
@@ -141,7 +134,7 @@ public class vCenterServiceImpl implements vCenterService
             credentials.setPassword(vcenterCredentials.getPassword());
             requestMessage.setCredentials(credentials);
 
-            final CompletableFuture<VCenter> promise = vCenterAsyncAcknowledgement.register(correlationId.toString());
+            final CompletableFuture<VCenter> promise = vCenterAsyncAcknowledgement.register(correlationId);
 
             rabbitTemplate.convertAndSend(requestExchange, requestRoutingKey, requestMessage);
 
@@ -191,7 +184,7 @@ public class vCenterServiceImpl implements vCenterService
                     vcenterCredentials.getPassword(), vcenterCredentials.getUsername());
             requestMessage.setRegistrationInfo(registrationInfo);
 
-            final CompletableFuture<ConsulRegistryResult> promise = consulRegisterAsyncAcknowledgement.register(correlationId.toString());
+            final CompletableFuture<ConsulRegistryResult> promise = consulRegisterAsyncAcknowledgement.register(correlationId);
 
             rabbitTemplate.convertAndSend(requestExchange, requestRoutingKey, requestMessage);
 
@@ -211,8 +204,8 @@ public class vCenterServiceImpl implements vCenterService
     }
 
     @Override
-    public CompletableFuture<DestroyVmResponse> requestVmDeletion(final EndpointCredentials vcenterCredentials, final String jobId,
-            final HostRepresentation hostRepresentation)
+    public LongRunning<TaskAckMessage, DestroyVmResponse> requestVmDeletion(final EndpointCredentials vcenterCredentials,
+            final String jobId, final HostRepresentation hostRepresentation)
     {
         final String requiredCapability = "vcenter-destroy-virtualMachine";
 
@@ -224,17 +217,14 @@ public class vCenterServiceImpl implements vCenterService
             if (matchedCapabilities.isEmpty())
             {
                 LOG.info("No matching capability found for capability [{}]", requiredCapability);
-                return CompletableFuture.completedFuture(null);
+                return new LongRunning<>(CompletableFuture.completedFuture(null), CompletableFuture.completedFuture(null));
             }
             final Capability matchedCapability = matchedCapabilities.stream().findFirst().get();
             LOG.debug("Found capability {}", matchedCapability.getProfile());
 
             final Map<String, String> amqpProperties = fruService.declareBinding(matchedCapability, replyTo);
 
-            final String requestExchange = amqpProperties.get("request-exchange");
-            final String requestRoutingKey = amqpProperties.get("request-routing-key");
-
-            final UUID correlationId = UUID.randomUUID();
+            final String correlationId = UUID.randomUUID().toString();
 
             final List<DestroyVMRequestMessage> requestMessages = dataService
                     .getDestroyVMRequestMessage(jobId, hostRepresentation, vcenterCredentials.getEndpointUrl(),
@@ -242,28 +232,34 @@ public class vCenterServiceImpl implements vCenterService
 
             if (requestMessages != null && !requestMessages.isEmpty())
             {
-                final DestroyVMRequestMessage requestMessage = requestMessages.get(0);
-                requestMessage.setMessageProperties(new MessageProperties(new Date(), correlationId.toString(), replyTo));
+                final String requestExchange = amqpProperties.get("request-exchange");
+                final String requestRoutingKey = amqpProperties.get("request-routing-key");
 
-                final CompletableFuture<DestroyVmResponse> promise = vmDeletionAsyncAcknowledgement.register(correlationId.toString());
+                final DestroyVMRequestMessage requestMessage = requestMessages.get(0);
+                requestMessage.setMessageProperties(new MessageProperties(new Date(), correlationId, replyTo));
+
+                final CompletableFuture<TaskAckMessage> acknowledgementPromise = vcenterTaskAckAsyncAcknowledgement.register(correlationId);
+                final CompletableFuture<DestroyVmResponse> completionPromise = vmDeletionAsyncAcknowledgement.register(correlationId);
 
                 rabbitTemplate.convertAndSend(requestExchange, requestRoutingKey, requestMessage);
 
-                return promise;
+                return new LongRunning<>(acknowledgementPromise, completionPromise);
             }
 
-            return CompletableFuture.completedFuture(null);
+            return new LongRunning<>(CompletableFuture.completedFuture(null), CompletableFuture.completedFuture(null));
         }
         catch (ServiceTimeoutException | CapabilityRegistryException e)
         {
-            return CompletableFuture.completedFuture(null);
+            return new LongRunning<>(CompletableFuture.completedFuture(null), CompletableFuture.completedFuture(null));
         }
         catch (MalformedURLException e)
         {
-            final CompletableFuture<DestroyVmResponse> promise = new CompletableFuture<>();
-            LOG.error("Malformed URL Exception with url [{}]", vcenterCredentials.getEndpointUrl());
-            promise.completeExceptionally(e);
-            return promise;
+            LOG.error("Malformed URL Exception occurred for Endpoint URL: [{}]", vcenterCredentials.getEndpointUrl());
+            final CompletableFuture<TaskAckMessage> acknowledgementPromise = new CompletableFuture<>();
+            acknowledgementPromise.completeExceptionally(e);
+            final CompletableFuture<DestroyVmResponse> completionPromise = new CompletableFuture<>();
+            completionPromise.completeExceptionally(e);
+            return new LongRunning<>(acknowledgementPromise, completionPromise);
         }
     }
 
@@ -316,6 +312,7 @@ public class vCenterServiceImpl implements vCenterService
         }
         catch (MalformedURLException e)
         {
+            LOG.error("Malformed URL Exception occurred for Endpoint URL: [{}]", vcenterCredentials.getEndpointUrl());
             final CompletableFuture<TaskAckMessage> acknowledgementPromise = new CompletableFuture<>();
             acknowledgementPromise.completeExceptionally(e);
             final CompletableFuture<HostMaintenanceModeResponse> completionPromise = new CompletableFuture<>();
@@ -325,7 +322,7 @@ public class vCenterServiceImpl implements vCenterService
     }
 
     @Override
-    public CompletableFuture<VCenterHostPowerOperationStatus> requestHostPowerOff(final EndpointCredentials vcenterCredentials,
+    public LongRunning<TaskAckMessage, VCenterHostPowerOperationStatus> requestHostPowerOff(final EndpointCredentials vcenterCredentials,
             final String hostname)
     {
         final String requiredCapability = "vcenter-powercommand";
@@ -338,7 +335,7 @@ public class vCenterServiceImpl implements vCenterService
             if (matchedCapabilities.isEmpty())
             {
                 LOG.info("No matching capability found for capability [{}]", requiredCapability);
-                return CompletableFuture.completedFuture(null);
+                return new LongRunning<>(CompletableFuture.completedFuture(null), CompletableFuture.completedFuture(null));
             }
             final Capability matchedCapability = matchedCapabilities.stream().findFirst().get();
             LOG.debug("Found capability {}", matchedCapability.getProfile());
@@ -362,29 +359,31 @@ public class vCenterServiceImpl implements vCenterService
 
             requestMessage.setPowerOperationRequest(powerOperationRequest);
 
-            final CompletableFuture<VCenterHostPowerOperationStatus> promise = vCenterHostPowerAsyncAcknowledgement
-                    .register(correlationId.toString());
+            final CompletableFuture<TaskAckMessage> acknowledgementPromise = vcenterTaskAckAsyncAcknowledgement.register(correlationId);
+            final CompletableFuture<VCenterHostPowerOperationStatus> completionPromise = vCenterHostPowerAsyncAcknowledgement
+                    .register(correlationId);
 
             rabbitTemplate.convertAndSend(requestExchange, requestRoutingKey, requestMessage);
 
-            return promise;
+            return new LongRunning<>(acknowledgementPromise, completionPromise);
         }
         catch (ServiceTimeoutException | CapabilityRegistryException e)
         {
-            return CompletableFuture.completedFuture(null);
+            return new LongRunning<>(CompletableFuture.completedFuture(null), CompletableFuture.completedFuture(null));
         }
         catch (MalformedURLException e)
         {
-            final CompletableFuture<VCenterHostPowerOperationStatus> promise = new CompletableFuture<>();
-            LOG.error("Malformed URL Exception with url [{}]", vcenterCredentials.getEndpointUrl());
-            promise.completeExceptionally(e);
-            return promise;
+            LOG.error("Malformed URL Exception occurred for Endpoint URL: [{}]", vcenterCredentials.getEndpointUrl());
+            final CompletableFuture<TaskAckMessage> acknowledgementPromise = new CompletableFuture<>();
+            acknowledgementPromise.completeExceptionally(e);
+            final CompletableFuture<VCenterHostPowerOperationStatus> completionPromise = new CompletableFuture<>();
+            completionPromise.completeExceptionally(e);
+            return new LongRunning<>(acknowledgementPromise, completionPromise);
         }
     }
 
     @Override
-    public CompletableFuture<ClusterOperationResponse> requestHostRemoval(final EndpointCredentials vcenterCredentials,
-            final String clusterId, final String hostname)
+    public LongRunning<TaskAckMessage, ClusterOperationResponse> requestHostRemoval(final EndpointCredentials vcenterCredentials, final String hostname)
     {
         final String requiredCapability = "vcenter-remove-host";
 
@@ -396,7 +395,7 @@ public class vCenterServiceImpl implements vCenterService
             if (matchedCapabilities.isEmpty())
             {
                 LOG.info("No matching capability found for capability [{}]", requiredCapability);
-                return CompletableFuture.completedFuture(null);
+                return new LongRunning<>(CompletableFuture.completedFuture(null), CompletableFuture.completedFuture(null));
             }
             final Capability matchedCapability = matchedCapabilities.stream().findFirst().get();
             LOG.debug("Found capability {}", matchedCapability.getProfile());
@@ -413,35 +412,38 @@ public class vCenterServiceImpl implements vCenterService
 
             final ClusterOperationRequest clusterOperationRequest = new ClusterOperationRequest();
             clusterOperationRequest.setHostName(hostname);
-            clusterOperationRequest.setClusterID(clusterId);
             clusterOperationRequest.setClusterOperation(ClusterOperationRequest.ClusterOperation.REMOVE_HOST);
             requestMessage.setClusterOperationRequest(clusterOperationRequest);
 
-            final CompletableFuture<ClusterOperationResponse> promise = vcenterClusterOperationAsyncAcknowledgement
-                    .register(correlationId.toString());
+            final CompletableFuture<TaskAckMessage> acknowledgementPromise = vcenterTaskAckAsyncAcknowledgement.register(correlationId);
+            final CompletableFuture<ClusterOperationResponse> completionPromise = vcenterClusterOperationAsyncAcknowledgement
+                    .register(correlationId);
 
-            LOG.info("Host removal request with correlation id [{}]", correlationId.toString());
+            LOG.info("Host removal request with correlation id [{}]", correlationId);
 
             rabbitTemplate.convertAndSend(requestExchange, requestRoutingKey, requestMessage);
 
-            return promise;
+            return new LongRunning<>(acknowledgementPromise, completionPromise);
 
         }
         catch (ServiceTimeoutException | CapabilityRegistryException e)
         {
-            return CompletableFuture.completedFuture(null);
+            return new LongRunning<>(CompletableFuture.completedFuture(null), CompletableFuture.completedFuture(null));
         }
         catch (MalformedURLException e)
         {
-            final CompletableFuture<ClusterOperationResponse> promise = new CompletableFuture<>();
-            LOG.error("Malformed URL Exception with url [{}]", vcenterCredentials.getEndpointUrl());
-            promise.completeExceptionally(e);
-            return promise;
+            LOG.error("Malformed URL Exception occurred for operation Host Removal with Endpoint URL: [{}]",
+                    vcenterCredentials.getEndpointUrl());
+            final CompletableFuture<TaskAckMessage> acknowledgementPromise = new CompletableFuture<>();
+            acknowledgementPromise.completeExceptionally(e);
+            final CompletableFuture<ClusterOperationResponse> completionPromise = new CompletableFuture<>();
+            completionPromise.completeExceptionally(e);
+            return new LongRunning<>(acknowledgementPromise, completionPromise);
         }
     }
 
     @Override
-    public CompletableFuture<ClusterOperationResponse> requestHostAddition(final EndpointCredentials vcenterCredentials,
+    public LongRunning<TaskAckMessage, ClusterOperationResponse> requestHostAddition(final EndpointCredentials vcenterCredentials,
             final String hostname, final String clusterId, final String hostUsername, final String hostPassword)
     {
         final String requiredCapability = "vcenter-addhostvcenter";
@@ -454,7 +456,7 @@ public class vCenterServiceImpl implements vCenterService
             if (matchedCapabilities.isEmpty())
             {
                 LOG.info("No matching capability found for capability [{}]", requiredCapability);
-                return CompletableFuture.completedFuture(null);
+                return new LongRunning<>(CompletableFuture.completedFuture(null), CompletableFuture.completedFuture(null));
             }
             final Capability matchedCapability = matchedCapabilities.stream().findFirst().get();
             LOG.debug("Found capability {}", matchedCapability.getProfile());
@@ -477,26 +479,29 @@ public class vCenterServiceImpl implements vCenterService
             clusterOperationRequest.setClusterOperation(ClusterOperationRequest.ClusterOperation.ADD_HOST);
             requestMessage.setClusterOperationRequest(clusterOperationRequest);
 
-            final CompletableFuture<ClusterOperationResponse> promise = vcenterClusterOperationAsyncAcknowledgement
-                    .register(correlationId.toString());
+            final CompletableFuture<TaskAckMessage> acknowledgementPromise = vcenterTaskAckAsyncAcknowledgement.register(correlationId);
+            final CompletableFuture<ClusterOperationResponse> completionPromise = vcenterClusterOperationAsyncAcknowledgement.register(correlationId);
 
-            LOG.info("Host addition request with correlation id [{}]", correlationId.toString());
+            LOG.info("Host addition request with correlation id [{}]", correlationId);
 
             rabbitTemplate.convertAndSend(requestExchange, requestRoutingKey, requestMessage);
 
-            return promise;
+            return new LongRunning<>(acknowledgementPromise, completionPromise);
 
         }
         catch (ServiceTimeoutException | CapabilityRegistryException e)
         {
-            return CompletableFuture.completedFuture(null);
+            return new LongRunning<>(CompletableFuture.completedFuture(null), CompletableFuture.completedFuture(null));
         }
         catch (MalformedURLException e)
         {
-            final CompletableFuture<ClusterOperationResponse> promise = new CompletableFuture<>();
-            LOG.error("Malformed URL Exception with url [{}]", vcenterCredentials.getEndpointUrl());
-            promise.completeExceptionally(e);
-            return promise;
+            LOG.error("Malformed URL Exception occurred for operation Host Addition with Endpoint URL: [{}]",
+                    vcenterCredentials.getEndpointUrl());
+            final CompletableFuture<TaskAckMessage> acknowledgementPromise = new CompletableFuture<>();
+            acknowledgementPromise.completeExceptionally(e);
+            final CompletableFuture<ClusterOperationResponse> completionPromise = new CompletableFuture<>();
+            completionPromise.completeExceptionally(e);
+            return new LongRunning<>(acknowledgementPromise, completionPromise);
         }
     }
 }

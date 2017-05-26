@@ -28,18 +28,17 @@ public interface vCenterService {
 
     CompletableFuture<ConsulRegistryResult> requestConsulRegistration(final EndpointCredentials vcenterCredentials);
 
-    CompletableFuture<VCenterHostPowerOperationStatus> requestHostPowerOff(final EndpointCredentials vcenterCredentials,
+    LongRunning<TaskAckMessage, VCenterHostPowerOperationStatus> requestHostPowerOff(final EndpointCredentials vcenterCredentials,
                                                                            final String hostname);
 
-    CompletableFuture<DestroyVmResponse> requestVmDeletion(final EndpointCredentials vcenterCredentials, final String jobId,
+    LongRunning<TaskAckMessage, DestroyVmResponse> requestVmDeletion(final EndpointCredentials vcenterCredentials, final String jobId,
             final HostRepresentation hostRepresentation);
 
     LongRunning<TaskAckMessage, HostMaintenanceModeResponse> requestHostMaintenanceModeEnable(EndpointCredentials vcenterCredentials,
                                                                                     String hostname);
 
-    CompletableFuture<ClusterOperationResponse> requestHostRemoval(final EndpointCredentials vcenterCredentials, final String clusterId,
-                                                                   final String hostname);
+    LongRunning<TaskAckMessage, ClusterOperationResponse> requestHostRemoval(final EndpointCredentials vcenterCredentials, final String hostname);
 
-    CompletableFuture<ClusterOperationResponse> requestHostAddition(EndpointCredentials vcenterCredentials, String hostname, String clusterId, String hostUsername,
+    LongRunning<TaskAckMessage, ClusterOperationResponse> requestHostAddition(EndpointCredentials vcenterCredentials, String hostname, String clusterId, String hostUsername,
             String hostPassword);
 }
