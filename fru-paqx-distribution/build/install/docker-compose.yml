@@ -1,0 +1,25 @@
+# Copyright (c) 2017 Dell Inc. or its subsidiaries.  All Rights Reserved.
+# Dell EMC Confidential/Proprietary Information
+
+version: '2'
+
+services:
+  fru-paqx:
+    image: cpsd-fru-paqx-service:${IMAGE_TAG}
+    container_name: symphony-fru-paqx
+    ports:
+     - "18443:18443"
+     - "8085:8085"      # THIS IS A TEMPORARY DEBUG PORT TO BE REMOVED
+    extra_hosts:
+     - amqp:${AMQP_HOST}
+    environment:
+     - CREDENTIALS=${CREDENTIALS}
+     - PASSPHRASES=${PASSPHRASES}
+     - TRUSTSTOREPATH=${TRUSTSTOREPATH}
+     - KEYSTOREPATH=${KEYSTOREPATH}
+    volumes:
+     - /opt/dell/cpsd/fru-paqx/conf:/opt/dell/cpsd/fru-paqx/conf
+     - ${TRUSTSTOREPATH}:${TRUSTSTOREPATH}
+     - ${KEYSTOREPATH}:${KEYSTOREPATH}
+     - ${CREDENTIALS}:${CREDENTIALS}
+     - ${PASSPHRASES}:${PASSPHRASES}

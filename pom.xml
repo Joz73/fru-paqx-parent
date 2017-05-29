@@ -47,7 +47,7 @@
         <!-- Maven plugins -->
         <plugin-maven-compiler-version>3.3</plugin-maven-compiler-version><!-- there is 3.5.1 already -->
         <plugin-maven-dependency-version>2.10</plugin-maven-dependency-version>
-        <plugin-jsonschema2pojo-version>0.4.27</plugin-jsonschema2pojo-version>
+        <plugin-jsonschema2pojo-version>0.4.34</plugin-jsonschema2pojo-version>
         <docker-maven-plugin-version>0.4.13</docker-maven-plugin-version>
         <spring-rabbit-test.version>1.7.0.RELEASE</spring-rabbit-test.version>
     </properties>

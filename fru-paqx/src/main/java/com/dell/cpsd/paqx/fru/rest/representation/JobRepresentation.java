@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import javax.ws.rs.core.Link;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -84,12 +85,22 @@ public class JobRepresentation
 
     public void addLink(Link link)
     {
-        links.add(LinkRepresentation.from(link, HttpMethod.POST.name()));
+        addLink(link, 0);
+    }
+
+    public void addLink(Link link, int nextStepDelay)
+    {
+        links.add(LinkRepresentation.from(link, HttpMethod.POST.name(), nextStepDelay));
     }
 
     public void addLink(Link link, String httpMethod)
     {
-        links.add(LinkRepresentation.from(link, httpMethod));
+        addLink(link, httpMethod, 0);
+    }
+
+    public void addLink(Link link, String httpMethod, int nextStepDelay)
+    {
+        links.add(LinkRepresentation.from(link, httpMethod, nextStepDelay));
     }
 
     public String getLastResponse()

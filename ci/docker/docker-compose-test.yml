@@ -1,0 +1,77 @@
+version: '2'
+
+services:
+  amqp:
+    image: docker-dev-local.art.local/library/rabbitmq:3-management
+    hostname: rabbit-1
+    environment:
+      - RABBITMQ_ERLANG_COOKIE
+    ports:
+      - "15672:15672"
+      - "8500:8500"
+#      - "18443:18443"
+#    expose:
+      - "5672:5672"
+
+  capability-registry:
+    image: docker-dev-local.art.local/cpsd-core-capability-registry-service
+    network_mode:  "service:amqp"
+    depends_on:
+      - amqp
+
+  endpoint-registry:
+    image: docker-dev-local.art.local/cpsd-core-endpoint-registry-service
+    network_mode:  "service:amqp"
+    depends_on:
+      - amqp
+      - consul
+
+#  coprhd-adapter:
+#    image: cpsd-coprhd-adapter-service:1.1-SNAPSHOT
+#    network_mode:  "service:amqp"
+#    depends_on:
+#      - amqp
+#      - consul
+#      - endpoint-registry
+#      - capability-registry
+
+  rackhd-adapter:
+    image: docker-dev-local.art.local/cpsd-rackhd-adapter-service
+    network_mode:  "service:amqp"
+    depends_on:
+      - amqp
+      - consul
+      - endpoint-registry
+      - capability-registry
+
+#  vcenter-adapter:
+#    image: docker-dev-local.art.local/cpsd-vcenter-adapter-service
+#    network_mode:  "service:amqp"
+#    depends_on:
+#      - amqp
+#      - consul
+#      - endpoint-registry
+#      - capability-registry
+
+  consul:
+    image: registry.hub.docker.com/library/consul:0.7.5
+    network_mode:  "service:amqp"
+
+#  fru-paqx:
+#    image: cpsd-fru-paqx-service
+#    network_mode:  "service:amqp"
+#    depends_on:
+#      - vcenter-adapter
+#      - rackhd-adapter
+#      - coprhd-adapter
+#    environment:
+#     - CREDENTIALS=${CREDENTIALS}
+#     - PASSPHRASES=${PASSPHRASES}
+#     - TRUSTSTOREPATH=${TRUSTSTOREPATH}
+#     - KEYSTOREPATH=${KEYSTOREPATH}
+#    volumes:
+#     - /opt/dell/cpsd/fru-paqx/conf:/opt/dell/cpsd/fru-paqx/conf
+#     - ${TRUSTSTOREPATH}:${TRUSTSTOREPATH}
+#     - ${KEYSTOREPATH}:${KEYSTOREPATH}
+#     - ${CREDENTIALS}:${CREDENTIALS}
+#     - ${PASSPHRASES}:${PASSPHRASES}

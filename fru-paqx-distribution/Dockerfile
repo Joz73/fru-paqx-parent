@@ -9,16 +9,32 @@
 # Start from base image with Java 8
 FROM java:8-jre-alpine
 
-RUN mkdir -p /opt/dell/cpsd/fru-paqx/bin
-RUN mkdir -p /opt/dell/cpsd/fru-paqx/logs
-RUN mkdir -p /opt/dell/cpsd/fru-paqx/lib
-RUN mkdir -p /opt/dell/cpsd/fru-paqx/install
+WORKDIR /opt/dell/cpsd/fru-paqx/
 
-COPY target/dependency/lib/fru-paqx-*.jar /opt/dell/cpsd/fru-paqx/lib/fru-paqx.jar
-COPY docker/image/bin/run.sh /opt/dell/cpsd/fru-paqx/bin/
+RUN mkdir -p ./bin \
+&& mkdir -p ./logs \
+&& mkdir -p ./lib \
+&& mkdir -p ./install \
+&& mkdir -p ./conf
 
-RUN chmod 755 /opt/dell/cpsd/fru-paqx/bin/run.sh
+COPY target/dependency/lib/* ./lib/
+COPY build/conf/* ./conf/
+COPY build/service/run.sh ./bin/
 
+RUN chmod 755 ./bin/run.sh
+
+EXPOSE 18443
 EXPOSE 8085
+
+ARG DELL_JAVA_VERSION=unknown
+ARG BUILD_NUMBER=unknown
+ARG GIT_COMMIT=unknown
+ARG BUILD_TYPE=dev
+ARG CPSD_SOFTWARE_VERSION=unknown
+LABEL   com.dell.cpsd.version=CPSD_SOFTWARE_VERSION\
+        com.dell.cpsd.git_revision=$GIT_COMMIT\
+        com.dell.cpsd.build_number=$BUILD_NUMBER\
+        com.dell.cpsd.build_type=$BUILD_TYPE\
+        com.dell.cpsd.java=$DELL_JAVA_VERSION
 
 CMD ["/opt/dell/cpsd/fru-paqx/bin/run.sh"]

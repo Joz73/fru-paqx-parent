@@ -37,7 +37,33 @@
         <url>https://github.com/dellemc-symphony/fru-paqx-parent/tree/master</url>
     </scm>
 
+    <properties>
+        <dbh2.version>1.4.195</dbh2.version>
+    </properties>
+
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-orm -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.1-api</artifactId>
+        </dependency>
+
+
+        <!-- H2 DB -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${dbh2.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.dell.cpsd.common.messaging</groupId>
             <artifactId>common-rabbitmq</artifactId>
@@ -135,7 +161,22 @@
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-validation</artifactId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>jersey-bean-validation</artifactId>
+                    <groupId>org.glassfish.jersey.ext</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>bean-validator</artifactId>
+                    <groupId>org.glassfish.hk2.external</groupId>
+                </exclusion>
             </exclusions>
+        </dependency>
+
+        <!--Version 2.5 is omitted in previous exclusion. Instead we used code from 2013.-->
+        <dependency>
+            <groupId>org.glassfish.hk2.external</groupId>
+            <artifactId>bean-validator</artifactId>
+            <version>2.2.0-b10</version>
         </dependency>
 
         <dependency>
@@ -397,15 +438,20 @@
                             </sourceDirectory>
                             <targetPackage>com.dell.converged.capabilities.compute.discovered.nodes.api</targetPackage>
                             <outputDirectory>${project.build.directory}/generated-sources/discovered-nodes-capabilities</outputDirectory>
+                            <removeOldOutput>false</removeOldOutput>
                             <useLongIntegers>true</useLongIntegers>
-                            <removeOldOutput>true</removeOldOutput>
                             <generateBuilders>true</generateBuilders>
                             <includeConstructors>true</includeConstructors>
-                            <includeAdditionalProperties>true</includeAdditionalProperties>
+                            <includeAdditionalProperties>false</includeAdditionalProperties>
                             <serializable>false</serializable>
-                            <customAnnotator>com.dell.cpsd.common.contract.enricher.plugins.jsonschema2pojo.MessageAnnotator
+                            <useCommonsLang3>true</useCommonsLang3>
+                            <includeJsr303Annotations>true</includeJsr303Annotations>
+                            <sourceSortOrder>FILES_FIRST</sourceSortOrder>
+                            <customAnnotator>
+                                com.dell.cpsd.common.contract.enricher.plugins.jsonschema2pojo.MessageAnnotator
                             </customAnnotator>
-                            <customRuleFactory>com.dell.cpsd.common.contract.enricher.plugins.jsonschema2pojo.DefaultRuleFactory
+                            <customRuleFactory>
+                                com.dell.cpsd.common.contract.enricher.plugins.jsonschema2pojo.DefaultRuleFactory
                             </customRuleFactory>
                         </configuration>
                     </execution>

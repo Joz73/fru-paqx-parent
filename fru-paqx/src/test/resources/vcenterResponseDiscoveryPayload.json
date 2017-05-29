@@ -1,0 +1,2174 @@
+{
+  "messageProperties": {
+    "timestamp": "2017-05-17T10:13:17.458+0000",
+    "correlationId": "c72445b6-5681-4669-b12f-22eb577b0217",
+    "replyTo": "fru-paqx.IRENWHOOLTL1C"
+  },
+  "datacenters": [
+  {
+    "name": "Datacenter",
+    "id": "datacenter-2",
+    "clusters": {
+      "domain-c29": {
+        "name": "DenseStorage",
+        "id": "domain-c29",
+        "hosts": {
+          "host-31": {
+            "name": "mcr1-s1.mdmz.lab.vce.com",
+            "id": "host-31",
+            "vmIds": [
+              "vm-50",
+              "vm-48"
+            ],
+            "datastoreIds": [
+              "datastore-45",
+              "datastore-32",
+              "datastore-55",
+              "datastore-56"
+            ],
+            "networkIds": [
+              "network-12",
+              "dvportgroup-28",
+              "dvportgroup-27",
+              "dvportgroup-26",
+              "dvportgroup-24",
+              "dvportgroup-40",
+              "dvportgroup-38",
+              "dvportgroup-44",
+              "dvportgroup-42"
+            ]
+          },
+          "host-33": {
+            "name": "mcr1-s2.mdmz.lab.vce.com",
+            "id": "host-33",
+            "config": {
+              "hostNetworkInfo": {
+                "dnsConfig": {
+                  "ipAddresses": [
+                    "10.3.221.16",
+                    "10.3.221.17"
+                  ],
+                  "dhcp": false,
+                  "domainName": "mdmz.lab.vce.com",
+                  "hostName": "mcr1-s2",
+                  "searchDomains": [
+                    "mdmz.lab.vce.com"
+                  ]
+                },
+                "ipRouteConfig": {
+                  "defaultGateway": "10.3.249.129"
+                },
+                "pnics": [
+                  {
+                    "device": "vmnic0",
+                    "driver": "ixgbe",
+                    "mac": "2c:60:0c:45:3f:2c",
+                    "pci": "0000:03:00.0"
+                  },
+                  {
+                    "device": "vmnic1",
+                    "driver": "ixgbe",
+                    "mac": "2c:60:0c:45:3f:2d",
+                    "pci": "0000:03:00.1"
+                  },
+                  {
+                    "device": "vmnic2",
+                    "driver": "ixgbe",
+                    "mac": "90:e2:ba:89:e9:18",
+                    "pci": "0000:82:00.0"
+                  },
+                  {
+                    "device": "vmnic3",
+                    "driver": "ixgbe",
+                    "mac": "90:e2:ba:89:e9:19",
+                    "pci": "0000:82:00.1"
+                  }
+                ],
+                "vnics": [
+                  {
+                    "device": "vmk0",
+                    "portGroup": "",
+                    "specification": {
+                      "mac": "90:e2:ba:89:e9:19",
+                      "ip": {
+                        "dhcp": false,
+                        "ipAddress": "10.3.249.192",
+                        "subnetMask": "255.255.255.128"
+                      },
+                      "dvsPortConnection": {
+                        "portKey": "24",
+                        "portGroupId": "dvportgroup-28"
+                      }
+                    }
+                  },
+                  {
+                    "device": "vmk1",
+                    "portGroup": "",
+                    "specification": {
+                      "mac": "00:50:56:68:af:ff",
+                      "ip": {
+                        "dhcp": false,
+                        "ipAddress": "172.24.249.27",
+                        "subnetMask": "255.255.255.192"
+                      },
+                      "dvsPortConnection": {
+                        "portKey": "10",
+                        "portGroupId": "dvportgroup-26"
+                      }
+                    }
+                  },
+                  {
+                    "device": "vmk2",
+                    "portGroup": "",
+                    "specification": {
+                      "mac": "00:50:56:6d:9a:5a",
+                      "ip": {
+                        "dhcp": false,
+                        "ipAddress": "172.24.249.179",
+                        "subnetMask": "255.255.255.192"
+                      },
+                      "dvsPortConnection": {
+                        "portKey": "11",
+                        "portGroupId": "dvportgroup-40"
+                      }
+                    }
+                  },
+                  {
+                    "device": "vmk3",
+                    "portGroup": "",
+                    "specification": {
+                      "mac": "00:50:56:60:34:b4",
+                      "ip": {
+                        "dhcp": false,
+                        "ipAddress": "172.24.249.243",
+                        "subnetMask": "255.255.255.192"
+                      },
+                      "dvsPortConnection": {
+                        "portKey": "9",
+                        "portGroupId": "dvportgroup-44"
+                      }
+                    }
+                  }
+                ],
+                "vswitchs": [
+                  {
+                    "key": "key-vim.host.VirtualSwitch-vSwitch0",
+                    "name": "vSwitch0",
+                    "vswitchSpec": {
+                      "hostNetworkPolicy": {
+                        "hostNetworkSecurityPolicy": {
+                          "allowPromiscuous": false
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "vmIds": [
+              "vm-49"
+            ],
+            "datastoreIds": [
+              "datastore-45",
+              "datastore-34",
+              "datastore-55",
+              "datastore-56"
+            ],
+            "networkIds": [
+              "network-12",
+              "dvportgroup-28",
+              "dvportgroup-27",
+              "dvportgroup-26",
+              "dvportgroup-24",
+              "dvportgroup-40",
+              "dvportgroup-38",
+              "dvportgroup-44",
+              "dvportgroup-42"
+            ]
+          }
+        }
+      },
+      "domain-c7": {
+        "name": "Customer",
+        "id": "domain-c7",
+        "hosts": {
+          "host-15": {
+            "name": "mcr1-c16.mdmz.lab.vce.com",
+            "id": "host-15",
+            "config": {
+              "hostNetworkInfo": {
+                "dnsConfig": {
+                  "ipAddresses": [
+                    "10.3.221.16",
+                    "10.3.221.17"
+                  ],
+                  "dhcp": false,
+                  "domainName": "mdmz.lab.vce.com",
+                  "hostName": "mcr1-c16",
+                  "searchDomains": [
+                    "mdmz.lab.vce.com"
+                  ]
+                },
+                "ipRouteConfig": {
+                  "defaultGateway": "10.3.249.129"
+                },
+                "pnics": [
+                  {
+                    "device": "vmnic0",
+                    "driver": "ixgbe",
+                    "mac": "2c:60:0c:7b:35:54",
+                    "pci": "0000:06:00.0"
+                  },
+                  {
+                    "device": "vmnic1",
+                    "driver": "ixgbe",
+                    "mac": "2c:60:0c:7b:35:55",
+                    "pci": "0000:06:00.1"
+                  },
+                  {
+                    "device": "vmnic2",
+                    "driver": "ixgbe",
+                    "mac": "2c:60:0c:66:a2:e1",
+                    "pci": "0000:01:00.0"
+                  },
+                  {
+                    "device": "vmnic3",
+                    "driver": "ixgbe",
+                    "mac": "2c:60:0c:66:a2:e2",
+                    "pci": "0000:01:00.1"
+                  }
+                ],
+                "vnics": [
+                  {
+                    "device": "vmk0",
+                    "portGroup": "",
+                    "specification": {
+                      "mac": "2c:60:0c:7b:35:54",
+                      "ip": {
+                        "dhcp": false,
+                        "ipAddress": "10.3.249.186",
+                        "subnetMask": "255.255.255.128"
+                      },
+                      "dvsPortConnection": {
+                        "portKey": "30",
+                        "portGroupId": "dvportgroup-28"
+                      }
+                    }
+                  },
+                  {
+                    "device": "vmk1",
+                    "portGroup": "",
+                    "specification": {
+                      "mac": "00:50:56:6d:76:f8",
+                      "ip": {
+                        "dhcp": false,
+                        "ipAddress": "172.24.249.21",
+                        "subnetMask": "255.255.255.192"
+                      },
+                      "dvsPortConnection": {
+                        "portKey": "15",
+                        "portGroupId": "dvportgroup-26"
+                      }
+                    }
+                  },
+                  {
+                    "device": "vmk2",
+                    "portGroup": "",
+                    "specification": {
+                      "mac": "00:50:56:6b:2a:a9",
+                      "ip": {
+                        "dhcp": false,
+                        "ipAddress": "172.24.249.149",
+                        "subnetMask": "255.255.255.192"
+                      },
+                      "dvsPortConnection": {
+                        "portKey": "15",
+                        "portGroupId": "dvportgroup-40"
+                      }
+                    }
+                  },
+                  {
+                    "device": "vmk3",
+                    "portGroup": "",
+                    "specification": {
+                      "mac": "00:50:56:6c:94:b2",
+                      "ip": {
+                        "dhcp": false,
+                        "ipAddress": "172.24.249.213",
+                        "subnetMask": "255.255.255.192"
+                      },
+                      "dvsPortConnection": {
+                        "portKey": "11",
+                        "portGroupId": "dvportgroup-44"
+                      }
+                    }
+                  }
+                ],
+                "vswitchs": [
+                  {
+                    "key": "key-vim.host.VirtualSwitch-vSwitch0",
+                    "name": "vSwitch0",
+                    "vswitchSpec": {
+                      "hostNetworkPolicy": {
+                        "hostNetworkSecurityPolicy": {
+                          "allowPromiscuous": false
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "vmIds": [
+              "vm-67",
+              "vm-52",
+              "vm-321",
+              "vm-275"
+            ],
+            "datastoreIds": [
+              "datastore-16",
+              "datastore-55",
+              "datastore-56"
+            ],
+            "networkIds": [
+              "network-12",
+              "dvportgroup-28",
+              "dvportgroup-27",
+              "dvportgroup-26",
+              "dvportgroup-24",
+              "dvportgroup-40",
+              "dvportgroup-38",
+              "dvportgroup-44",
+              "dvportgroup-42"
+            ]
+          },
+          "host-13": {
+            "name": "mcr1-c12.mdmz.lab.vce.com",
+            "id": "host-13",
+            "config": {
+              "hostNetworkInfo": {
+                "dnsConfig": {
+                  "ipAddresses": [
+                    "10.3.221.16",
+                    "10.3.221.17"
+                  ],
+                  "dhcp": false,
+                  "domainName": "mdmz.lab.vce.com",
+                  "hostName": "mcr1-c12",
+                  "searchDomains": [
+                    "mdmz.lab.vce.com"
+                  ]
+                },
+                "ipRouteConfig": {
+                  "defaultGateway": "10.3.249.129"
+                },
+                "pnics": [
+                  {
+                    "device": "vmnic0",
+                    "driver": "ixgbe",
+                    "mac": "2c:60:0c:7b:35:d6",
+                    "pci": "0000:06:00.0"
+                  },
+                  {
+                    "device": "vmnic1",
+                    "driver": "ixgbe",
+                    "mac": "2c:60:0c:7b:35:d7",
+                    "pci": "0000:06:00.1"
+                  },
+                  {
+                    "device": "vmnic2",
+                    "driver": "ixgbe",
+                    "mac": "2c:60:0c:45:3e:92",
+                    "pci": "0000:01:00.0"
+                  },
+                  {
+                    "device": "vmnic3",
+                    "driver": "ixgbe",
+                    "mac": "2c:60:0c:45:3e:93",
+                    "pci": "0000:01:00.1"
+                  }
+                ],
+                "vnics": [
+                  {
+                    "device": "vmk0",
+                    "portGroup": "",
+                    "specification": {
+                      "mac": "2c:60:0c:7b:35:d6",
+                      "ip": {
+                        "dhcp": false,
+                        "ipAddress": "10.3.249.182",
+                        "subnetMask": "255.255.255.128"
+                      },
+                      "dvsPortConnection": {
+                        "portKey": "29",
+                        "portGroupId": "dvportgroup-28"
+                      }
+                    }
+                  },
+                  {
+                    "device": "vmk1",
+                    "portGroup": "",
+                    "specification": {
+                      "mac": "00:50:56:6b:32:38",
+                      "ip": {
+                        "dhcp": false,
+                        "ipAddress": "172.24.249.17",
+                        "subnetMask": "255.255.255.192"
+                      },
+                      "dvsPortConnection": {
+                        "portKey": "14",
+                        "portGroupId": "dvportgroup-26"
+                      }
+                    }
+                  },
+                  {
+                    "device": "vmk2",
+                    "portGroup": "",
+                    "specification": {
+                      "mac": "00:50:56:61:0b:fd",
+                      "ip": {
+                        "dhcp": false,
+                        "ipAddress": "172.24.249.145",
+                        "subnetMask": "255.255.255.192"
+                      },
+                      "dvsPortConnection": {
+                        "portKey": "14",
+                        "portGroupId": "dvportgroup-40"
+                      }
+                    }
+                  },
+                  {
+                    "device": "vmk3",
+                    "portGroup": "",
+                    "specification": {
+                      "mac": "00:50:56:6e:7e:f2",
+                      "ip": {
+                        "dhcp": false,
+                        "ipAddress": "172.24.249.209",
+                        "subnetMask": "255.255.255.192"
+                      },
+                      "dvsPortConnection": {
+                        "portKey": "12",
+                        "portGroupId": "dvportgroup-44"
+                      }
+                    }
+                  }
+                ],
+                "vswitchs": [
+                  {
+                    "key": "key-vim.host.VirtualSwitch-vSwitch0",
+                    "name": "vSwitch0",
+                    "vswitchSpec": {
+                      "hostNetworkPolicy": {
+                        "hostNetworkSecurityPolicy": {
+                          "allowPromiscuous": false
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "vmIds": [
+              "vm-53",
+              "vm-279",
+              "vm-273",
+              "vm-250",
+              "vm-248"
+            ],
+            "datastoreIds": [
+              "datastore-45",
+              "datastore-14",
+              "datastore-55",
+              "datastore-56"
+            ],
+            "networkIds": [
+              "network-12",
+              "dvportgroup-28",
+              "dvportgroup-27",
+              "dvportgroup-26",
+              "dvportgroup-24",
+              "dvportgroup-40",
+              "dvportgroup-38",
+              "dvportgroup-44",
+              "dvportgroup-42"
+            ]
+          },
+          "host-10": {
+            "name": "mcr1-c4.mdmz.lab.vce.com",
+            "id": "host-10",
+            "config": {
+              "hostNetworkInfo": {
+                "dnsConfig": {
+                  "ipAddresses": [
+                    "10.3.221.16",
+                    "10.3.221.17"
+                  ],
+                  "dhcp": false,
+                  "domainName": "mdmz.lab.vce.com",
+                  "hostName": "mcr1-c4",
+                  "searchDomains": [
+                    "mdmz.lab.vce.com"
+                  ]
+                },
+                "ipRouteConfig": {
+                  "defaultGateway": "10.3.249.129"
+                },
+                "pnics": [
+                  {
+                    "device": "vmnic0",
+                    "driver": "ixgbe",
+                    "mac": "2c:60:0c:7b:35:ac",
+                    "pci": "0000:06:00.0"
+                  },
+                  {
+                    "device": "vmnic1",
+                    "driver": "ixgbe",
+                    "mac": "2c:60:0c:7b:35:ad",
+                    "pci": "0000:06:00.1"
+                  },
+                  {
+                    "device": "vmnic2",
+                    "driver": "ixgbe",
+                    "mac": "2c:60:0c:45:3d:d0",
+                    "pci": "0000:01:00.0"
+                  },
+                  {
+                    "device": "vmnic3",
+                    "driver": "ixgbe",
+                    "mac": "2c:60:0c:45:3d:d1",
+                    "pci": "0000:01:00.1"
+                  }
+                ],
+                "vnics": [
+                  {
+                    "device": "vmk0",
+                    "portGroup": "",
+                    "specification": {
+                      "mac": "2c:60:0c:7b:35:ac",
+                      "ip": {
+                        "dhcp": false,
+                        "ipAddress": "10.3.249.174",
+                        "subnetMask": "255.255.255.128"
+                      },
+                      "dvsPortConnection": {
+                        "portKey": "31",
+                        "portGroupId": "dvportgroup-28"
+                      }
+                    }
+                  },
+                  {
+                    "device": "vmk1",
+                    "portGroup": "",
+                    "specification": {
+                      "mac": "00:50:56:69:29:9d",
+                      "ip": {
+                        "dhcp": false,
+                        "ipAddress": "172.24.249.9",
+                        "subnetMask": "255.255.255.192"
+                      },
+                      "dvsPortConnection": {
+                        "portKey": "9",
+                        "portGroupId": "dvportgroup-26"
+                      }
+                    }
+                  },
+                  {
+                    "device": "vmk2",
+                    "portGroup": "",
+                    "specification": {
+                      "mac": "00:50:56:6e:6f:aa",
+                      "ip": {
+                        "dhcp": false,
+                        "ipAddress": "172.24.249.137",
+                        "subnetMask": "255.255.255.192"
+                      },
+                      "dvsPortConnection": {
+                        "portKey": "9",
+                        "portGroupId": "dvportgroup-40"
+                      }
+                    }
+                  },
+                  {
+                    "device": "vmk3",
+                    "portGroup": "",
+                    "specification": {
+                      "mac": "00:50:56:6c:38:cd",
+                      "ip": {
+                        "dhcp": false,
+                        "ipAddress": "172.24.249.201",
+                        "subnetMask": "255.255.255.192"
+                      },
+                      "dvsPortConnection": {
+                        "portKey": "8",
+                        "portGroupId": "dvportgroup-44"
+                      }
+                    }
+                  }
+                ],
+                "vswitchs": [
+                  {
+                    "key": "key-vim.host.VirtualSwitch-vSwitch0",
+                    "name": "vSwitch0",
+                    "vswitchSpec": {
+                      "hostNetworkPolicy": {
+                        "hostNetworkSecurityPolicy": {
+                          "allowPromiscuous": false
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "vmIds": [
+              "vm-70",
+              "vm-64",
+              "vm-58",
+              "vm-63",
+              "vm-54",
+              "vm-282",
+              "vm-277",
+              "vm-254",
+              "vm-69",
+              "vm-51",
+              "vm-281",
+              "vm-253",
+              "vm-246"
+            ],
+            "datastoreIds": [
+              "datastore-45",
+              "datastore-11",
+              "datastore-55",
+              "datastore-56"
+            ],
+            "networkIds": [
+              "network-12",
+              "dvportgroup-28",
+              "dvportgroup-27",
+              "dvportgroup-26",
+              "dvportgroup-24",
+              "dvportgroup-40",
+              "dvportgroup-38",
+              "dvportgroup-44",
+              "dvportgroup-42"
+            ]
+          }
+        }
+      }
+    },
+    "networks": {
+      "dvportgroup-40": {
+        "name": "mcr1-sio-data1-152",
+        "id": "dvportgroup-40",
+        "hostIds": [
+          "host-10",
+          "host-33",
+          "host-31",
+          "host-15",
+          "host-13"
+        ],
+        "vmIds": [
+          "vm-54",
+          "vm-53",
+          "vm-52",
+          "vm-282",
+          "vm-51",
+          "vm-50",
+          "vm-49"
+        ]
+      },
+      "dvportgroup-42": {
+        "name": "DSwitch2-DVUplinks-41",
+        "id": "dvportgroup-42",
+        "hostIds": [
+          "host-10",
+          "host-33",
+          "host-31",
+          "host-15",
+          "host-13"
+        ],
+        "vmIds": [
+        ]
+      },
+      "dvportgroup-26": {
+        "name": "mcr1-esx-vmotion-106",
+        "id": "dvportgroup-26",
+        "hostIds": [
+          "host-10",
+          "host-33",
+          "host-31",
+          "host-15",
+          "host-13"
+        ],
+        "vmIds": [
+        ]
+      },
+      "dvportgroup-28": {
+        "name": "mcr1-esx-mgmt-1824",
+        "id": "dvportgroup-28",
+        "hostIds": [
+          "host-10",
+          "host-33",
+          "host-31",
+          "host-15",
+          "host-13"
+        ],
+        "vmIds": [
+          "vm-277",
+          "vm-70",
+          "vm-279",
+          "vm-275",
+          "vm-69",
+          "vm-64",
+          "vm-63",
+          "vm-321",
+          "vm-250",
+          "vm-67",
+          "vm-248",
+          "vm-246",
+          "vm-273",
+          "vm-58"
+        ]
+      },
+      "dvportgroup-27": {
+        "name": "mcr1-sio-mgmt-150",
+        "id": "dvportgroup-27",
+        "hostIds": [
+          "host-10",
+          "host-33",
+          "host-31",
+          "host-15",
+          "host-13"
+        ],
+        "vmIds": [
+          "vm-281",
+          "vm-254",
+          "vm-54",
+          "vm-53",
+          "vm-52",
+          "vm-282",
+          "vm-253",
+          "vm-51",
+          "vm-50",
+          "vm-49"
+        ]
+      },
+      "dvportgroup-38": {
+        "name": "DSwitch1-DVUplinks-37",
+        "id": "dvportgroup-38",
+        "hostIds": [
+          "host-10",
+          "host-33",
+          "host-31",
+          "host-15",
+          "host-13"
+        ],
+        "vmIds": [
+        ]
+      },
+      "dvportgroup-44": {
+        "name": "mcr1-sio-data2-154",
+        "id": "dvportgroup-44",
+        "hostIds": [
+          "host-10",
+          "host-33",
+          "host-31",
+          "host-15",
+          "host-13"
+        ],
+        "vmIds": [
+          "vm-54",
+          "vm-53",
+          "vm-52",
+          "vm-282",
+          "vm-51",
+          "vm-50",
+          "vm-49"
+        ]
+      },
+      "network-12": {
+        "name": "VM Network",
+        "id": "network-12",
+        "hostIds": [
+          "host-10",
+          "host-13",
+          "host-15",
+          "host-31",
+          "host-33"
+        ],
+        "vmIds": [
+          "vm-48"
+        ]
+      },
+      "dvportgroup-24": {
+        "name": "DSwitch0-DVUplinks-23",
+        "id": "dvportgroup-24",
+        "hostIds": [
+          "host-10",
+          "host-33",
+          "host-31",
+          "host-15",
+          "host-13"
+        ],
+        "vmIds": [
+        ]
+      }
+    },
+    "dvSwitches": {
+      "dvs-41": {
+        "name": "DSwitch2",
+        "id": "dvs-41",
+        "portGroupids": [
+          "dvportgroup-44",
+          "dvportgroup-42"
+        ],
+        "uuid": "d1 51 09 50 b2 71 17 31-3e 83 85 dc 4e d9 53 96",
+        "vmwareDVSConfigInfo": {
+          "portSetting": {
+            "policy": {
+              "allowPromicuous": false
+            }
+          },
+          "hostMembers": [
+            {
+              "configInfo": {
+                "hostId": "host-10",
+                "pnicBacking": {
+                  "spec": [
+                    {
+                      "pnicDevice": "vmnic2",
+                      "uplinkPortkey": "16"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "configInfo": {
+                "hostId": "host-33",
+                "pnicBacking": {
+                  "spec": [
+                    {
+                      "pnicDevice": "vmnic0",
+                      "uplinkPortkey": "20"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "configInfo": {
+                "hostId": "host-31",
+                "pnicBacking": {
+                  "spec": [
+                    {
+                      "pnicDevice": "vmnic0",
+                      "uplinkPortkey": "21"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "configInfo": {
+                "hostId": "host-15",
+                "pnicBacking": {
+                  "spec": [
+                    {
+                      "pnicDevice": "vmnic2",
+                      "uplinkPortkey": "18"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "configInfo": {
+                "hostId": "host-13",
+                "pnicBacking": {
+                  "spec": [
+                    {
+                      "pnicDevice": "vmnic2",
+                      "uplinkPortkey": "17",
+                      "portGroupId": "dvportgroup-42"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      "dvs-23": {
+        "name": "DSwitch0",
+        "id": "dvs-23",
+        "portGroupids": [
+          "dvportgroup-28",
+          "dvportgroup-27",
+          "dvportgroup-26",
+          "dvportgroup-24"
+        ],
+        "uuid": "fa f4 09 50 28 1d 80 2b-bf 4d 47 af 6b 73 ec a7",
+        "vmwareDVSConfigInfo": {
+          "portSetting": {
+            "policy": {
+              "allowPromicuous": false
+            }
+          },
+          "hostMembers": [
+            {
+              "configInfo": {
+                "hostId": "host-10",
+                "pnicBacking": {
+                  "spec": [
+                    {
+                      "pnicDevice": "vmnic0",
+                      "uplinkPortkey": "32"
+                    },
+                    {
+                      "pnicDevice": "vmnic3",
+                      "uplinkPortkey": "33"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "configInfo": {
+                "hostId": "host-33",
+                "pnicBacking": {
+                  "spec": [
+                    {
+                      "pnicDevice": "vmnic3",
+                      "uplinkPortkey": "42"
+                    },
+                    {
+                      "pnicDevice": "vmnic1",
+                      "uplinkPortkey": "43"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "configInfo": {
+                "hostId": "host-31",
+                "pnicBacking": {
+                  "spec": [
+                    {
+                      "pnicDevice": "vmnic1",
+                      "uplinkPortkey": "40"
+                    },
+                    {
+                      "pnicDevice": "vmnic3",
+                      "uplinkPortkey": "41"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "configInfo": {
+                "hostId": "host-15",
+                "pnicBacking": {
+                  "spec": [
+                    {
+                      "pnicDevice": "vmnic0",
+                      "uplinkPortkey": "36"
+                    },
+                    {
+                      "pnicDevice": "vmnic3",
+                      "uplinkPortkey": "37"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "configInfo": {
+                "hostId": "host-13",
+                "pnicBacking": {
+                  "spec": [
+                    {
+                      "pnicDevice": "vmnic0",
+                      "uplinkPortkey": "34",
+                      "portGroupId": "dvportgroup-24"
+                    },
+                    {
+                      "pnicDevice": "vmnic3",
+                      "uplinkPortkey": "35",
+                      "portGroupId": "dvportgroup-24"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      "dvs-37": {
+        "name": "DSwitch1",
+        "id": "dvs-37",
+        "portGroupids": [
+          "dvportgroup-40",
+          "dvportgroup-38"
+        ],
+        "uuid": "c7 5d 09 50 3e 8f fa fd-b2 c7 60 a9 b9 07 40 63",
+        "vmwareDVSConfigInfo": {
+          "portSetting": {
+            "policy": {
+              "allowPromicuous": false
+            }
+          },
+          "hostMembers": [
+            {
+              "configInfo": {
+                "hostId": "host-10",
+                "pnicBacking": {
+                  "spec": [
+                    {
+                      "pnicDevice": "vmnic1",
+                      "uplinkPortkey": "16"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "configInfo": {
+                "hostId": "host-33",
+                "pnicBacking": {
+                  "spec": [
+                    {
+                      "pnicDevice": "vmnic2",
+                      "uplinkPortkey": "20"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "configInfo": {
+                "hostId": "host-31",
+                "pnicBacking": {
+                  "spec": [
+                    {
+                      "pnicDevice": "vmnic2",
+                      "uplinkPortkey": "21"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "configInfo": {
+                "hostId": "host-15",
+                "pnicBacking": {
+                  "spec": [
+                    {
+                      "pnicDevice": "vmnic1",
+                      "uplinkPortkey": "18"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "configInfo": {
+                "hostId": "host-13",
+                "pnicBacking": {
+                  "spec": [
+                    {
+                      "pnicDevice": "vmnic1",
+                      "uplinkPortkey": "17",
+                      "portGroupId": "dvportgroup-38"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "datastores": {
+      "datastore-16": {
+        "name": "DAS16",
+        "id": "datastore-16",
+        "hostIds": [
+          "host-15"
+        ],
+        "vmIds": [
+          "vm-52"
+        ],
+        "summary": {
+          "type": "VMFS",
+          "url": "ds:///vmfs/volumes/56856639-a48552d0-0988-2c600c66a2e1/"
+        }
+      },
+      "datastore-14": {
+        "name": "DAS12",
+        "id": "datastore-14",
+        "hostIds": [
+          "host-13"
+        ],
+        "vmIds": [
+          "vm-53"
+        ],
+        "summary": {
+          "type": "VMFS",
+          "url": "ds:///vmfs/volumes/568450da-fa939200-e4aa-2c600c453e92/"
+        }
+      },
+      "datastore-11": {
+        "name": "DAS4",
+        "id": "datastore-11",
+        "hostIds": [
+          "host-10"
+        ],
+        "vmIds": [
+          "vm-51"
+        ],
+        "summary": {
+          "type": "VMFS",
+          "url": "ds:///vmfs/volumes/5683fe58-08ad948b-ef30-2c600c453dd0/"
+        }
+      },
+      "datastore-55": {
+        "name": "SIO-CDSA",
+        "id": "datastore-55",
+        "hostIds": [
+          "host-10",
+          "host-31",
+          "host-13",
+          "host-33",
+          "host-15"
+        ],
+        "vmIds": [
+          "vm-70",
+          "vm-250",
+          "vm-277",
+          "vm-248",
+          "vm-67",
+          "vm-279",
+          "vm-275",
+          "vm-69",
+          "vm-64",
+          "vm-281",
+          "vm-254",
+          "vm-246",
+          "vm-63",
+          "vm-58",
+          "vm-253",
+          "vm-273"
+        ],
+        "summary": {
+          "type": "VMFS",
+          "url": "ds:///vmfs/volumes/58924af4-3f514e80-1193-2c600c453dd0/"
+        }
+      },
+      "datastore-45": {
+        "name": "MIGRATION",
+        "id": "datastore-45",
+        "hostIds": [
+          "host-31",
+          "host-10",
+          "host-13",
+          "host-33"
+        ],
+        "vmIds": [
+          "vm-48",
+          "vm-54"
+        ],
+        "summary": {
+          "type": "NFS",
+          "url": "ds:///vmfs/volumes/017064d7-4c9a3ff3/"
+        }
+      },
+      "datastore-34": {
+        "name": "DASS2",
+        "id": "datastore-34",
+        "hostIds": [
+          "host-33"
+        ],
+        "vmIds": [
+          "vm-49"
+        ],
+        "summary": {
+          "type": "VMFS",
+          "url": "ds:///vmfs/volumes/588f561d-5704c9d8-39df-2c600c453f2c/"
+        }
+      },
+      "datastore-56": {
+        "name": "SIO-CDSB",
+        "id": "datastore-56",
+        "hostIds": [
+          "host-10",
+          "host-15",
+          "host-31",
+          "host-33",
+          "host-13"
+        ],
+        "vmIds": [
+          "vm-321",
+          "vm-282"
+        ],
+        "summary": {
+          "type": "VMFS",
+          "url": "ds:///vmfs/volumes/58924b10-223de5ac-77c9-2c600c453dd0/"
+        }
+      },
+      "datastore-32": {
+        "name": "DASS1",
+        "id": "datastore-32",
+        "hostIds": [
+          "host-31"
+        ],
+        "vmIds": [
+          "vm-50"
+        ],
+        "summary": {
+          "type": "VMFS",
+          "url": "ds:///vmfs/volumes/588f4895-f5253c33-d61c-2c600c66fdfc/"
+        }
+      }
+    },
+    "vms": {
+      "vm-50": {
+        "name": "ScaleIO-10.3.251.24-MDM",
+        "id": "vm-50",
+        "guest": {
+          "hostName": "ScaleIO-10-3-251-24",
+          "net": [
+            {
+              "connected": true,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:17:e6",
+              "networkId": "mcr1-sio-mgmt-150"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:59:fc",
+              "networkId": "mcr1-sio-data1-152"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:27:20",
+              "networkId": "mcr1-sio-data2-154"
+            }
+          ]
+        }
+      },
+      "vm-52": {
+        "name": "ScaleIO-10.3.251.19-MDM",
+        "id": "vm-52",
+        "guest": {
+          "guestId": "sles11_64Guest",
+          "guestFullName": "SUSE Linux Enterprise 11 (64-bit)",
+          "hostName": "ScaleIO-10-3-251-19",
+          "net": [
+            {
+              "connected": true,
+              "ipAddresses": [
+                "10.3.251.19",
+                "fe80::250:56ff:fe89:31d6"
+              ],
+              "macAddress": "00:50:56:89:31:d6",
+              "networkId": "mcr1-sio-mgmt-150"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "172.24.249.170",
+                "fe80::250:56ff:fe89:ece6"
+              ],
+              "macAddress": "00:50:56:89:ec:e6",
+              "networkId": "mcr1-sio-data1-152"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "172.24.249.234",
+                "fe80::250:56ff:fe89:5af7"
+              ],
+              "macAddress": "00:50:56:89:5a:f7",
+              "networkId": "mcr1-sio-data2-154"
+            }
+          ]
+        }
+      },
+      "vm-51": {
+        "name": "ScaleIO-10.3.251.7-MDM",
+        "id": "vm-51",
+        "guest": {
+          "guestId": "sles11_64Guest",
+          "guestFullName": "SUSE Linux Enterprise 11 (64-bit)",
+          "hostName": "ScaleIO-10-3-251-7",
+          "net": [
+            {
+              "connected": true,
+              "ipAddresses": [
+                "10.3.251.7",
+                "fe80::250:56ff:fe89:2685"
+              ],
+              "macAddress": "00:50:56:89:26:85",
+              "networkId": "mcr1-sio-mgmt-150"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "172.24.249.158",
+                "fe80::250:56ff:fe89:71b5"
+              ],
+              "macAddress": "00:50:56:89:71:b5",
+              "networkId": "mcr1-sio-data1-152"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "172.24.249.222",
+                "fe80::250:56ff:fe89:1d4f"
+              ],
+              "macAddress": "00:50:56:89:1d:4f",
+              "networkId": "mcr1-sio-data2-154"
+            }
+          ]
+        }
+      },
+      "vm-54": {
+        "name": "ScaleIO-10.3.251.29-GW",
+        "id": "vm-54",
+        "guest": {
+          "guestId": "sles11_64Guest",
+          "guestFullName": "SUSE Linux Enterprise 11 (64-bit)",
+          "hostName": "ScaleIO-10-3-251-29-GW",
+          "net": [
+            {
+              "connected": true,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:5f:a1",
+              "networkId": "mcr1-sio-data1-152"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:52:42",
+              "networkId": "mcr1-sio-data2-154"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:20:07",
+              "networkId": "mcr1-sio-mgmt-150"
+            }
+          ]
+        }
+      },
+      "vm-53": {
+        "name": "ScaleIO-10.3.251.15-MDM",
+        "id": "vm-53",
+        "guest": {
+          "guestId": "sles11_64Guest",
+          "guestFullName": "SUSE Linux Enterprise 11 (64-bit)",
+          "hostName": "ScaleIO-10-3-251-15",
+          "net": [
+            {
+              "connected": true,
+              "ipAddresses": [
+                "172.24.249.230",
+                "fe80::250:56ff:fe89:2870"
+              ],
+              "macAddress": "00:50:56:89:28:70",
+              "networkId": "mcr1-sio-data2-154"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "10.3.251.15",
+                "fe80::250:56ff:fe89:2ffa"
+              ],
+              "macAddress": "00:50:56:89:2f:fa",
+              "networkId": "mcr1-sio-mgmt-150"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "172.24.249.166",
+                "fe80::250:56ff:fe89:f4f8"
+              ],
+              "macAddress": "00:50:56:89:f4:f8",
+              "networkId": "mcr1-sio-data1-152"
+            }
+          ]
+        }
+      },
+      "vm-250": {
+        "name": "art-coprhd.mpe.lab.vce.com",
+        "id": "vm-250",
+        "guest": {
+          "net": [
+            {
+              "connected": true,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:cd:6e",
+              "networkId": "mcr1-esx-mgmt-1824"
+            }
+          ]
+        }
+      },
+      "vm-58": {
+        "name": "RackhdX",
+        "id": "vm-58",
+        "guest": {
+          "guestId": "ubuntu64Guest",
+          "guestFullName": "Ubuntu Linux (64-bit)",
+          "hostName": "rackhd",
+          "net": [
+            {
+              "connected": true,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:ff:27",
+              "networkId": "mcr1-esx-mgmt-1824"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "10.3.249.203",
+                "fe80::250:56ff:fe89:156c"
+              ],
+              "macAddress": "00:50:56:89:15:6c",
+              "networkId": "mcr1-esx-mgmt-1824"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:bc:b2",
+              "networkId": "mcr1-esx-mgmt-1824"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:d3:1e",
+              "networkId": "mcr1-esx-mgmt-1824"
+            }
+          ]
+        }
+      },
+      "vm-273": {
+        "name": "symphony-fru-292",
+        "id": "vm-273",
+        "guest": {
+          "guestId": "centos64Guest",
+          "guestFullName": "CentOS 4/5/6/7 (64-bit)",
+          "hostName": "fru-292",
+          "net": [
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::c084:a6ff:fef3:b1bd"
+              ],
+              "macAddress": "c2:84:a6:f3:b1:bd"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "172.18.0.1",
+                "fe80::42:6aff:fe6f:10f4"
+              ],
+              "macAddress": "02:42:6a:6f:10:f4"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::4d3:1ff:fea4:b557"
+              ],
+              "macAddress": "06:d3:01:a4:b5:57"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::a878:ccff:fec4:dab2"
+              ],
+              "macAddress": "aa:78:cc:c4:da:b2"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::1087:a9ff:fe51:4bf8"
+              ],
+              "macAddress": "12:87:a9:51:4b:f8"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::a05d:5ff:fef3:9091"
+              ],
+              "macAddress": "a2:5d:05:f3:90:91"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::7870:10ff:fe85:673d"
+              ],
+              "macAddress": "7a:70:10:85:67:3d"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "10.3.249.204",
+                "fe80::250:56ff:fe89:2d2"
+              ],
+              "macAddress": "00:50:56:89:02:d2",
+              "networkId": "mcr1-esx-mgmt-1824"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::d8d3:8eff:fe42:b64"
+              ],
+              "macAddress": "da:d3:8e:42:0b:64"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "172.17.0.1"
+              ],
+              "macAddress": "02:42:f7:b8:59:34"
+            }
+          ]
+        }
+      },
+      "vm-254": {
+        "name": "ScaleIO-10.3.251.35-GW",
+        "id": "vm-254",
+        "guest": {
+          "guestId": "sles11_64Guest",
+          "guestFullName": "SUSE Linux Enterprise 11 (64-bit)",
+          "hostName": "ScaleIO-10-3-251-35",
+          "net": [
+            {
+              "connected": true,
+              "ipAddresses": [
+                "10.3.251.35",
+                "fe80::250:56ff:fe89:bb14"
+              ],
+              "macAddress": "00:50:56:89:bb:14",
+              "networkId": "mcr1-sio-mgmt-150"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:06:f4",
+              "networkId": "mcr1-sio-mgmt-150"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:ed:3f",
+              "networkId": "mcr1-sio-mgmt-150"
+            }
+          ]
+        }
+      },
+      "vm-253": {
+        "name": "CoprHD",
+        "id": "vm-253",
+        "guest": {
+          "net": [
+          ]
+        }
+      },
+      "vm-275": {
+        "name": "auto-demo-symphony.mpe.lab.vce.com",
+        "id": "vm-275",
+        "guest": {
+          "guestId": "centos64Guest",
+          "guestFullName": "CentOS 4/5/6/7 (64-bit)",
+          "hostName": "auto-demo-symphony.mpe.lab.vce.com",
+          "net": [
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::482e:8fff:fe53:a05d"
+              ],
+              "macAddress": "4a:2e:8f:53:a0:5d"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::6c41:e3ff:fee8:6404"
+              ],
+              "macAddress": "6e:41:e3:e8:64:04"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::c4bc:7dff:fe0a:b59d"
+              ],
+              "macAddress": "c6:bc:7d:0a:b5:9d"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::f0ae:c8ff:fe24:5a2d"
+              ],
+              "macAddress": "f2:ae:c8:24:5a:2d"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::f468:afff:fedf:6094"
+              ],
+              "macAddress": "f6:68:af:df:60:94"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::8d:2aff:fec0:f07a"
+              ],
+              "macAddress": "02:8d:2a:c0:f0:7a"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::f031:10ff:fe8b:77f1"
+              ],
+              "macAddress": "f2:31:10:8b:77:f1"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "172.19.0.1",
+                "fe80::42:a4ff:fe92:2791"
+              ],
+              "macAddress": "02:42:a4:92:27:91"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::5c5d:f0ff:fea5:18a9"
+              ],
+              "macAddress": "5e:5d:f0:a5:18:a9"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::ccfd:ceff:fe54:4f28"
+              ],
+              "macAddress": "ce:fd:ce:54:4f:28"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::34bf:eff:fe6a:eb4d"
+              ],
+              "macAddress": "36:bf:0e:6a:eb:4d"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "10.3.249.214",
+                "fe80::250:56ff:fe89:825b"
+              ],
+              "macAddress": "00:50:56:89:82:5b",
+              "networkId": "mcr1-esx-mgmt-1824"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::cc71:6fff:febd:a1b"
+              ],
+              "macAddress": "ce:71:6f:bd:0a:1b"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::e08f:53ff:fe84:b54b"
+              ],
+              "macAddress": "e2:8f:53:84:b5:4b"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "172.18.0.1",
+                "fe80::42:87ff:fe5e:d28c"
+              ],
+              "macAddress": "02:42:87:5e:d2:8c"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::b4b3:daff:febb:f4a3"
+              ],
+              "macAddress": "b6:b3:da:bb:f4:a3"
+            }
+          ]
+        }
+      },
+      "vm-277": {
+        "name": "auto-demo-rackhd.mpe.lab.vce.com",
+        "id": "vm-277",
+        "guest": {
+          "guestId": "ubuntu64Guest",
+          "guestFullName": "Ubuntu Linux (64-bit)",
+          "hostName": "rackhd",
+          "net": [
+            {
+              "connected": true,
+              "ipAddresses": [
+                "172.31.128.1",
+                "fe80::250:56ff:fe89:f474"
+              ],
+              "macAddress": "00:50:56:89:f4:74",
+              "networkId": "mcr1-esx-mgmt-1824"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:2f:36",
+              "networkId": "mcr1-esx-mgmt-1824"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:5c:89",
+              "networkId": "mcr1-esx-mgmt-1824"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "10.3.249.213",
+                "fe80::250:56ff:fe89:7602"
+              ],
+              "macAddress": "00:50:56:89:76:02",
+              "networkId": "mcr1-esx-mgmt-1824"
+            }
+          ]
+        }
+      },
+      "vm-279": {
+        "name": "auto-demo-coprhd.mpe.lab.vce.com",
+        "id": "vm-279",
+        "guest": {
+          "net": [
+            {
+              "connected": true,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:83:d3",
+              "networkId": "mcr1-esx-mgmt-1824"
+            }
+          ]
+        }
+      },
+      "vm-248": {
+        "name": "art-rackhd.mpe.lab.vce.com",
+        "id": "vm-248",
+        "guest": {
+          "guestId": "ubuntu64Guest",
+          "guestFullName": "Ubuntu Linux (64-bit)",
+          "hostName": "rackhd",
+          "net": [
+            {
+              "connected": true,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:ab:e5",
+              "networkId": "mcr1-esx-mgmt-1824"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:bf:2e",
+              "networkId": "mcr1-esx-mgmt-1824"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "172.31.128.1",
+                "fe80::250:56ff:fe89:df71"
+              ],
+              "macAddress": "00:50:56:89:df:71",
+              "networkId": "mcr1-esx-mgmt-1824"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "10.3.249.221",
+                "fe80::250:56ff:fe89:b782"
+              ],
+              "macAddress": "00:50:56:89:b7:82",
+              "networkId": "mcr1-esx-mgmt-1824"
+            }
+          ]
+        }
+      },
+      "vm-70": {
+        "name": "Win2K12_Jump",
+        "id": "vm-70",
+        "guest": {
+          "guestId": "windows8Server64Guest",
+          "guestFullName": "Microsoft Windows Server 2012 (64-bit)",
+          "net": [
+            {
+              "connected": false,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:13:23",
+              "networkId": "mcr1-esx-mgmt-1824"
+            }
+          ]
+        }
+      },
+      "vm-63": {
+        "name": "CPSD Symphony FRU build 258",
+        "id": "vm-63",
+        "guest": {
+          "guestId": "centos64Guest",
+          "guestFullName": "CentOS 4/5/6/7 (64-bit)",
+          "hostName": "symphony-fru-1.mpe.lab.vce.com",
+          "net": [
+            {
+              "connected": false,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:38:b9",
+              "networkId": "mcr1-esx-mgmt-1824"
+            }
+          ]
+        }
+      },
+      "vm-281": {
+        "name": "CoprHD-3.6.0.0.30",
+        "id": "vm-281",
+        "guest": {
+          "net": [
+          ]
+        }
+      },
+      "vm-64": {
+        "name": "CPSD Symphony FRU build 258 take-2",
+        "id": "vm-64",
+        "guest": {
+          "guestId": "centos64Guest",
+          "guestFullName": "CentOS 4/5/6/7 (64-bit)",
+          "hostName": "symphony-fru-1.mpe.lab.vce.com",
+          "net": [
+            {
+              "connected": false,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:76:cb",
+              "networkId": "mcr1-esx-mgmt-1824"
+            }
+          ]
+        }
+      },
+      "vm-67": {
+        "name": "Ubuntu",
+        "id": "vm-67",
+        "guest": {
+          "guestId": "ubuntu64Guest",
+          "guestFullName": "Ubuntu Linux (64-bit)",
+          "hostName": "cpsd-virtual-machine",
+          "net": [
+            {
+              "connected": false,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:50:f6",
+              "networkId": "mcr1-esx-mgmt-1824"
+            }
+          ]
+        }
+      },
+      "vm-282": {
+        "name": "ScaleIOVM-10.3.251.54-SDS",
+        "id": "vm-282",
+        "guest": {
+          "guestId": "sles11_64Guest",
+          "guestFullName": "SUSE Linux Enterprise 11 (64-bit)",
+          "hostName": "ScaleIO-10-3-251-54",
+          "net": [
+            {
+              "connected": false,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:82:c5",
+              "networkId": "mcr1-sio-mgmt-150"
+            },
+            {
+              "connected": false,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:62:d5",
+              "networkId": "mcr1-sio-data1-152"
+            },
+            {
+              "connected": false,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:d2:40",
+              "networkId": "mcr1-sio-data2-154"
+            }
+          ]
+        }
+      },
+      "vm-69": {
+        "name": "WindowsJump",
+        "id": "vm-69",
+        "guest": {
+          "guestId": "windows8Server64Guest",
+          "guestFullName": "Microsoft Windows Server 2012 (64-bit)",
+          "hostName": "WIN-078HA18UDNK",
+          "net": [
+            {
+              "connected": true,
+              "ipAddresses": [
+                "10.3.249.206"
+              ],
+              "macAddress": "00:50:56:89:ad:07",
+              "networkId": "mcr1-esx-mgmt-1824"
+            }
+          ]
+        }
+      },
+      "vm-49": {
+        "name": "ScaleIO-10.3.251.25-MDM",
+        "id": "vm-49",
+        "guest": {
+          "guestId": "sles11_64Guest",
+          "guestFullName": "SUSE Linux Enterprise 11 (64-bit)",
+          "hostName": "ScaleIO-10-3-251-25",
+          "net": [
+            {
+              "connected": true,
+              "ipAddresses": [
+                "10.3.251.25",
+                "fe80::250:56ff:fe89:6fb9"
+              ],
+              "macAddress": "00:50:56:89:6f:b9",
+              "networkId": "mcr1-sio-mgmt-150"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "172.24.249.176",
+                "fe80::250:56ff:fe89:7aee"
+              ],
+              "macAddress": "00:50:56:89:7a:ee",
+              "networkId": "mcr1-sio-data1-152"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "172.24.249.239",
+                "fe80::250:56ff:fe89:8b73"
+              ],
+              "macAddress": "00:50:56:89:8b:73",
+              "networkId": "mcr1-sio-data2-154"
+            }
+          ]
+        }
+      },
+      "vm-48": {
+        "name": "EMC ScaleIO SVM Template (v2.0.7120.0) 1",
+        "id": "vm-48",
+        "guest": {
+          "guestId": "sles11_64Guest",
+          "guestFullName": "SUSE Linux Enterprise 11 (64-bit)",
+          "net": [
+            {
+              "connected": false,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:bc:e8",
+              "networkId": "VM Network"
+            },
+            {
+              "connected": false,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:61:2a",
+              "networkId": "VM Network"
+            },
+            {
+              "connected": false,
+              "ipAddresses": [
+              ],
+              "macAddress": "00:50:56:89:2f:8d",
+              "networkId": "VM Network"
+            }
+          ]
+        }
+      },
+      "vm-321": {
+        "name": "symphony-fru-560",
+        "id": "vm-321",
+        "guest": {
+          "guestId": "centos64Guest",
+          "guestFullName": "CentOS 4/5/6/7 (64-bit)",
+          "hostName": "fru-560",
+          "net": [
+            {
+              "connected": true,
+              "ipAddresses": [
+                "172.18.0.1",
+                "fe80::42:82ff:fe62:32dd"
+              ],
+              "macAddress": "02:42:82:62:32:dd"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "172.19.0.1",
+                "fe80::42:eeff:fe78:c131"
+              ],
+              "macAddress": "02:42:ee:78:c1:31"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::8c53:daff:fee2:24d8"
+              ],
+              "macAddress": "8e:53:da:e2:24:d8"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::8884:27ff:fe31:65e9"
+              ],
+              "macAddress": "8a:84:27:31:65:e9"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::98d1:53ff:fef0:76bd"
+              ],
+              "macAddress": "9a:d1:53:f0:76:bd"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::e45e:4aff:fe8d:b7b7"
+              ],
+              "macAddress": "e6:5e:4a:8d:b7:b7"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::94c8:f5ff:fe86:c551"
+              ],
+              "macAddress": "96:c8:f5:86:c5:51"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::5c09:beff:fe5a:46dd"
+              ],
+              "macAddress": "5e:09:be:5a:46:dd"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::901b:d3ff:fecc:2f2"
+              ],
+              "macAddress": "92:1b:d3:cc:02:f2"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::ec9d:d0ff:fe29:6c2b"
+              ],
+              "macAddress": "ee:9d:d0:29:6c:2b"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::e096:3cff:fefd:2971"
+              ],
+              "macAddress": "e2:96:3c:fd:29:71"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::b4ce:deff:fee1:b6a5"
+              ],
+              "macAddress": "b6:ce:de:e1:b6:a5"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::1442:c1ff:feaf:f540"
+              ],
+              "macAddress": "16:42:c1:af:f5:40"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "10.3.249.202",
+                "fe80::250:56ff:fe89:d149"
+              ],
+              "macAddress": "00:50:56:89:d1:49",
+              "networkId": "mcr1-esx-mgmt-1824"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::883f:7aff:fe36:582c"
+              ],
+              "macAddress": "8a:3f:7a:36:58:2c"
+            },
+            {
+              "connected": true,
+              "ipAddresses": [
+                "fe80::f015:84ff:fe91:2080"
+              ],
+              "macAddress": "f2:15:84:91:20:80"
+            }
+          ]
+        }
+      },
+      "vm-246": {
+        "name": "art-symphony.mpe.lab.vce.com",
+        "id": "vm-246",
+        "guest": {
+          "guestId": "centos64Guest",
+          "guestFullName": "CentOS 4/5/6/7 (64-bit)",
+          "hostName": "art-symphony.mpe.lab.vce.com",
+          "net": [
+            {
+              "connected": true,
+              "ipAddresses": [
+                "10.3.249.220",
+                "fe80::250:56ff:fe89:b861"
+              ],
+              "macAddress": "00:50:56:89:b8:61",
+              "networkId": "mcr1-esx-mgmt-1824"
+            }
+          ]
+        }
+      }
+    }
+  }
+]
+
+}

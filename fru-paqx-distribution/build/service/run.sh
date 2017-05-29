@@ -1,0 +1,3 @@
+#!/bin/sh
+CONTAINERID=$(basename "$(cat /proc/1/cpuset)" | cut -c 1-12)
+java -jar -Xms64m -Xmx192m -Dcontainer.id=$CONTAINERID /opt/dell/cpsd/fru-paqx/lib/fru-paqx*.jar -Dlog4j.configuration=file:/opt/dell/cpsd/fru-paqx/conf/fru-paqx-log4j.xml --spring.config.location=file:$CREDENTIALS,file:$PASSPHRASES --remote.dell.amqp.rabbitTrustStorePath=$TRUSTSTOREPATH --remote.dell.amqp.rabbitKeyStorePath=$KEYSTOREPATH

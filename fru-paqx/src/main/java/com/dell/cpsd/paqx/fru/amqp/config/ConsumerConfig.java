@@ -17,7 +17,12 @@ import com.dell.cpsd.paqx.fru.amqp.consumer.handler.*;
 import com.dell.cpsd.paqx.fru.amqp.model.Error;
 import com.dell.cpsd.paqx.fru.amqp.model.FruErrorMessage;
 import com.dell.cpsd.paqx.fru.amqp.model.MessageProperties;
+import com.dell.cpsd.paqx.fru.transformers.DestroyVMDtoToDestroyVMRequestMessageTransformer;
+import com.dell.cpsd.paqx.fru.transformers.DiscoveryInfoToVCenterDomainTransformer;
 import com.dell.cpsd.paqx.fru.transformers.DiscoveryInfoToVCenterSystemPropertiesTransformer;
+import com.dell.cpsd.paqx.fru.transformers.HostListToHostRepresentationTransformer;
+import com.dell.cpsd.paqx.fru.transformers.SDSListDtoToRemoveScaleIOMessageTransformer;
+import com.dell.cpsd.paqx.fru.transformers.ScaleIORestToScaleIODomainTransformer;
 import org.aopalliance.aop.Advice;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Queue;
@@ -75,7 +80,9 @@ public class ConsumerConfig {
     @Bean
     DefaultMessageListener fruMessageListener() {
         return new DefaultMessageListener(messageConverter, listNodesResponseHandler(), listStorageResponseHandler(),
-                vCenterDiscoverResponseHandler(), vCenterConsulRegisterResponseHandler(), scaleIOConsulRegisterResponseHandler());
+                vCenterDiscoverResponseHandler(), vCenterConsulRegisterResponseHandler(), scaleIOOrderAckResponseHandler(),
+                scaleIORemoveResponseHandler(), vCenterDestroyVmResponseHandler(), vCenterHostPowerOperationResponseHandler(),
+                vCenterHostMaintenanceModeResponseHandler(), vCenterClusterOperationsResponseHandler(), coprHDConsulRegisterResponseHandler());
     }
 
     @Bean
@@ -95,7 +102,7 @@ public class ConsumerConfig {
 
     @Bean
     VCenterDiscoverResponseHandler vCenterDiscoverResponseHandler() {
-        return new VCenterDiscoverResponseHandler(messageErrorTransformer(), discoveryInfoToVCenterSystemPropertiesTransformer());
+        return new VCenterDiscoverResponseHandler(messageErrorTransformer(), discoveryInfoToVCenterDomainTransformer());
     }
 
     @Bean
@@ -114,13 +121,34 @@ public class ConsumerConfig {
     }
 
     @Bean
-    HostMaintenanceModeResponseHandler hostMaintenanceModeResponseHandler() {
-        return new HostMaintenanceModeResponseHandler(messageErrorTransformer());
+    vCenterHostMaintenanceModeResponseHandler vCenterHostMaintenanceModeResponseHandler() {
+        return new vCenterHostMaintenanceModeResponseHandler(messageErrorTransformer());
     }
 
     @Bean
     VCenterClusterOperationsResponseHandler vCenterClusterOperationsResponseHandler() {
         return new VCenterClusterOperationsResponseHandler(messageErrorTransformer());
+    }
+
+    @Bean
+    CoprHDConsulRegisterResponseHandler coprHDConsulRegisterResponseHandler() {
+        return new CoprHDConsulRegisterResponseHandler(messageErrorTransformer());
+    }
+
+    @Bean
+    ScaleIOOrderAckResponseHandler scaleIOOrderAckResponseHandler() {
+        return new ScaleIOOrderAckResponseHandler(messageErrorTransformer());
+    }
+
+    @Bean
+    VCenterTaskAckResponseHandler vCenterTaskAckResponseHandler()
+    {
+        return new VCenterTaskAckResponseHandler(messageErrorTransformer());
+    }
+
+    @Bean
+    ScaleIORemoveResponseHandler scaleIORemoveResponseHandler() {
+        return new ScaleIORemoveResponseHandler(messageErrorTransformer());
     }
 
     ErrorTransformer<HasMessageProperties<?>> messageErrorTransformer() {
@@ -140,12 +168,31 @@ public class ConsumerConfig {
     }
 
     @Bean
-    DiscoveryInfoToVCenterSystemPropertiesTransformer discoveryInfoToVCenterSystemPropertiesTransformer() {
-        return new DiscoveryInfoToVCenterSystemPropertiesTransformer();
+    DiscoveryInfoToVCenterDomainTransformer discoveryInfoToVCenterDomainTransformer() {
+        return new DiscoveryInfoToVCenterDomainTransformer();
     }
 
     @Bean
-    ScaleIOConsulRegisterResponseHandler scaleIOConsulRegisterResponseHandler() {
-        return new ScaleIOConsulRegisterResponseHandler(messageErrorTransformer());
+    HostListToHostRepresentationTransformer hostListToHostRepresentationTransformer()
+    {
+        return new HostListToHostRepresentationTransformer();
+    }
+
+    @Bean
+    SDSListDtoToRemoveScaleIOMessageTransformer sdsListDtoToRemoveScaleIOMessageTransformer()
+    {
+        return new SDSListDtoToRemoveScaleIOMessageTransformer();
+    }
+
+    @Bean
+    DestroyVMDtoToDestroyVMRequestMessageTransformer destroyVMDtoToDestroyVMRequestMessageTransformer()
+    {
+        return new DestroyVMDtoToDestroyVMRequestMessageTransformer();
+    }
+
+    @Bean
+    ScaleIORestToScaleIODomainTransformer scaleIORestToScaleIODomainTransformer()
+    {
+        return new ScaleIORestToScaleIODomainTransformer();
     }
 }

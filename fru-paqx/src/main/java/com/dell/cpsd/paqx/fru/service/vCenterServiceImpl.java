@@ -6,19 +6,18 @@
 package com.dell.cpsd.paqx.fru.service;
 
 import com.dell.cpsd.hdp.capability.registry.api.Capability;
-import com.dell.cpsd.hdp.capability.registry.api.CapabilityProvider;
-import com.dell.cpsd.hdp.capability.registry.api.EndpointProperty;
 import com.dell.cpsd.hdp.capability.registry.client.CapabilityRegistryException;
 import com.dell.cpsd.hdp.capability.registry.client.ICapabilityRegistryLookupManager;
-import com.dell.cpsd.hdp.capability.registry.client.callback.ListCapabilityProvidersResponse;
 import com.dell.cpsd.paqx.fru.amqp.consumer.handler.AsyncAcknowledgement;
+import com.dell.cpsd.paqx.fru.domain.VCenter;
 import com.dell.cpsd.paqx.fru.dto.ConsulRegistryResult;
 import com.dell.cpsd.paqx.fru.rest.dto.EndpointCredentials;
 import com.dell.cpsd.paqx.fru.rest.dto.VCenterHostPowerOperationStatus;
-import com.dell.cpsd.paqx.fru.rest.dto.vCenterSystemProperties;
 import com.dell.cpsd.paqx.fru.rest.dto.vcenter.ClusterOperationResponse;
 import com.dell.cpsd.paqx.fru.rest.dto.vcenter.DestroyVmResponse;
 import com.dell.cpsd.paqx.fru.rest.dto.vcenter.HostMaintenanceModeResponse;
+import com.dell.cpsd.paqx.fru.rest.representation.HostRepresentation;
+import com.dell.cpsd.paqx.fru.valueobject.LongRunning;
 import com.dell.cpsd.service.common.client.exception.ServiceTimeoutException;
 import com.dell.cpsd.virtualization.capabilities.api.ClusterOperationRequest;
 import com.dell.cpsd.virtualization.capabilities.api.ClusterOperationRequestMessage;
@@ -32,12 +31,11 @@ import com.dell.cpsd.virtualization.capabilities.api.MaintenanceModeRequest;
 import com.dell.cpsd.virtualization.capabilities.api.MessageProperties;
 import com.dell.cpsd.virtualization.capabilities.api.PowerOperationRequest;
 import com.dell.cpsd.virtualization.capabilities.api.RegistrationInfo;
+import com.dell.cpsd.virtualization.capabilities.api.TaskAckMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpAdmin;
-import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -50,8 +48,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * Copyright &copy; 2017 Dell Inc. or its subsidiaries.  All Rights Reserved.
@@ -62,587 +58,450 @@ public class vCenterServiceImpl implements vCenterService
 {
     private static final Logger LOG = LoggerFactory.getLogger(vCenterServiceImpl.class);
 
-    private final ICapabilityRegistryLookupManager capabilityRegistryLookupManager;
-    private final RabbitTemplate                   rabbitTemplate;
-    private final AmqpAdmin                        amqpAdmin;
-    private final Queue                            responseQueue;
-    private final AsyncAcknowledgement             asyncAcknowledgement;
-    private final AsyncAcknowledgement             consulRegisterAsyncAcknowledgement;
-    private final AsyncAcknowledgement             vmDeletionAsyncAcknowledgement;
-    private final AsyncAcknowledgement             vCenterHostPowerAsyncAcknowledgement;
-    private final AsyncAcknowledgement             hostMaintenanceModeAsyncAcknowledgement;
-    private final AsyncAcknowledgement             vcenterClusterOperationAsyncAcknowledgement;
-    private final String                           replyTo;
+    private final ICapabilityRegistryLookupManager                      capabilityRegistryLookupManager;
+    private final RabbitTemplate                                        rabbitTemplate;
+    private final AmqpAdmin                                             amqpAdmin;
+    private final Queue                                                 responseQueue;
+    private final AsyncAcknowledgement<VCenter>                         vCenterAsyncAcknowledgement;
+    private final AsyncAcknowledgement<ConsulRegistryResult>            consulRegisterAsyncAcknowledgement;
+    private final AsyncAcknowledgement<DestroyVmResponse>               vmDeletionAsyncAcknowledgement;
+    private final AsyncAcknowledgement<VCenterHostPowerOperationStatus> vCenterHostPowerAsyncAcknowledgement;
+    private final AsyncAcknowledgement<HostMaintenanceModeResponse>     hostMaintenanceModeAsyncAcknowledgement;
+    private final AsyncAcknowledgement<ClusterOperationResponse>        vcenterClusterOperationAsyncAcknowledgement;
+    private final AsyncAcknowledgement<TaskAckMessage>                  vcenterTaskAckAsyncAcknowledgement;
+    private final String                                                replyTo;
+    private final FruService                                            fruService;
+    private final DataService                                           dataService;
 
     @Autowired
     public vCenterServiceImpl(final ICapabilityRegistryLookupManager capabilityRegistryLookupManager, final RabbitTemplate rabbitTemplate,
             final AmqpAdmin amqpAdmin, final Queue responseQueue,
-            @Qualifier(value = "vCenterDiscoverResponseHandler") final AsyncAcknowledgement asyncAcknowledgement,
-            @Qualifier(value = "vCenterConsulRegisterResponseHandler") final AsyncAcknowledgement consulRegisterAsyncAcknowledgement,
-            @Qualifier(value = "vCenterDestroyVmResponseHandler") final AsyncAcknowledgement vmDeletionAsyncAcknowledgement,
-            @Qualifier(value = "vCenterHostPowerOperationResponseHandler") final AsyncAcknowledgement vCenterHostPowerAsyncAcknowledgement,
-            @Qualifier(value = "hostMaintenanceModeResponseHandler") final AsyncAcknowledgement hostMaintenanceModeAsyncAcknowledgement,
-            @Qualifier(value = "vCenterClusterOperationsResponseHandler") final AsyncAcknowledgement vcenterClusterOperationAsyncAcknowledgement,
-            @Qualifier(value = "replyTo") final String replyTo)
+            @Qualifier(value = "vCenterDiscoverResponseHandler") final AsyncAcknowledgement<VCenter> vCenterAsyncAcknowledgement,
+            @Qualifier(value = "vCenterConsulRegisterResponseHandler") final AsyncAcknowledgement<ConsulRegistryResult> consulRegisterAsyncAcknowledgement,
+            @Qualifier(value = "vCenterDestroyVmResponseHandler") final AsyncAcknowledgement<DestroyVmResponse> vmDeletionAsyncAcknowledgement,
+            @Qualifier(value = "vCenterHostPowerOperationResponseHandler") final AsyncAcknowledgement<VCenterHostPowerOperationStatus> vCenterHostPowerAsyncAcknowledgement,
+            @Qualifier(value = "vCenterHostMaintenanceModeResponseHandler") final AsyncAcknowledgement<HostMaintenanceModeResponse> hostMaintenanceModeAsyncAcknowledgement,
+            @Qualifier(value = "vCenterClusterOperationsResponseHandler") final AsyncAcknowledgement<ClusterOperationResponse> vcenterClusterOperationAsyncAcknowledgement,
+            @Qualifier(value = "vCenterTaskAckResponseHandler") final AsyncAcknowledgement<TaskAckMessage> vcenterTaskAckAsyncAcknowledgement,
+            @Qualifier(value = "replyTo") final String replyTo, final FruService fruService, final DataService dataService)
     {
         this.capabilityRegistryLookupManager = capabilityRegistryLookupManager;
         this.rabbitTemplate = rabbitTemplate;
         this.amqpAdmin = amqpAdmin;
         this.responseQueue = responseQueue;
-        this.asyncAcknowledgement = asyncAcknowledgement;
+        this.vCenterAsyncAcknowledgement = vCenterAsyncAcknowledgement;
         this.consulRegisterAsyncAcknowledgement = consulRegisterAsyncAcknowledgement;
         this.vmDeletionAsyncAcknowledgement = vmDeletionAsyncAcknowledgement;
         this.vCenterHostPowerAsyncAcknowledgement = vCenterHostPowerAsyncAcknowledgement;
         this.hostMaintenanceModeAsyncAcknowledgement = hostMaintenanceModeAsyncAcknowledgement;
         this.vcenterClusterOperationAsyncAcknowledgement = vcenterClusterOperationAsyncAcknowledgement;
+        this.vcenterTaskAckAsyncAcknowledgement = vcenterTaskAckAsyncAcknowledgement;
         this.replyTo = replyTo;
+        this.fruService = fruService;
+        this.dataService = dataService;
     }
 
-    public CompletableFuture<vCenterSystemProperties> showSystem(final EndpointCredentials vcenterCredentials)
+    public CompletableFuture<VCenter> showSystem(final EndpointCredentials vcenterCredentials)
     {
         final String requiredCapability = "vcenter-discover";
+
         try
         {
-            final ListCapabilityProvidersResponse listCapabilityProvidersResponse = capabilityRegistryLookupManager
-                    .listCapabilityProviders(TimeUnit.SECONDS.toMillis(5));
+            new URL(vcenterCredentials.getEndpointUrl());
 
-            for (final CapabilityProvider capabilityProvider : listCapabilityProvidersResponse.getResponse())
+            final List<Capability> matchedCapabilities = fruService.findMatchingCapabilities(requiredCapability);
+            if (matchedCapabilities.isEmpty())
             {
-                for (final Capability capability : capabilityProvider.getCapabilities())
-                {
-                    LOG.debug("Found capability {}", capability.getProfile());
-
-                    if (requiredCapability.equals(capability.getProfile()))
-                    {
-                        LOG.debug("Found matching capability {}", capability.getProfile());
-                        final List<EndpointProperty> endpointProperties = capability.getProviderEndpoint().getEndpointProperties();
-                        final Map<String, String> amqpProperties = endpointProperties.stream()
-                                .collect(Collectors.toMap(EndpointProperty::getName, EndpointProperty::getValue));
-
-                        final String requestExchange = amqpProperties.get("request-exchange");
-                        final String requestRoutingKey = amqpProperties.get("request-routing-key");
-
-                        final TopicExchange responseExchange = new TopicExchange(amqpProperties.get("response-exchange"));
-                        final String responseRoutingKey = amqpProperties.get("response-routing-key").replace("{replyTo}", "." + replyTo);
-
-                        amqpAdmin.declareBinding(BindingBuilder.bind(responseQueue).to(responseExchange).with(responseRoutingKey));
-
-                        LOG.debug("Adding binding {} {}", responseExchange.getName(), responseRoutingKey);
-
-                        final UUID correlationId = UUID.randomUUID();
-                        DiscoveryRequestInfoMessage requestMessage = new DiscoveryRequestInfoMessage();
-                        requestMessage.setMessageProperties(
-                                new MessageProperties().withCorrelationId(correlationId.toString()).withReplyTo(replyTo)
-                                        .withTimestamp(new Date()));
-
-                        try
-                        {
-                            new URL(vcenterCredentials.getEndpointUrl());
-                        }
-                        catch (MalformedURLException e)
-                        {
-                            final CompletableFuture<vCenterSystemProperties> promise = new CompletableFuture<>();
-                            promise.completeExceptionally(e);
-                            return promise;
-                        }
-                        final DiscoveryRequestInfoMessage discoveryRequestInfo = new DiscoveryRequestInfoMessage();
-                        Credentials credentials = new Credentials();
-                        credentials.setUsername(vcenterCredentials.getUsername());
-                        credentials.setAddress(vcenterCredentials.getEndpointUrl());
-                        credentials.setPassword(vcenterCredentials.getPassword());
-                        requestMessage.setCredentials(credentials);
-
-                        final CompletableFuture<vCenterSystemProperties> promise = asyncAcknowledgement.register(correlationId.toString());
-
-                        rabbitTemplate.convertAndSend(requestExchange, requestRoutingKey, requestMessage);
-
-                        return promise;
-                    }
-                }
+                LOG.info("No matching capability found for capability [{}]", requiredCapability);
+                return CompletableFuture.completedFuture(null);
             }
-        }
-        catch (CapabilityRegistryException e)
-        {
-            LOG.error("Failed while looking up Capability Registry for {}", requiredCapability, e);
-        }
-        catch (ServiceTimeoutException e)
-        {
-            LOG.error("Service timed out while querying Capability Registry");
-        }
-        LOG.error("Unable to find required capability: {}", requiredCapability);
-        return CompletableFuture.completedFuture(null);
+            final Capability matchedCapability = matchedCapabilities.stream().findFirst().get();
+            LOG.debug("Found capability {}", matchedCapability.getProfile());
 
+            final Map<String, String> amqpProperties = fruService.declareBinding(matchedCapability, replyTo);
+
+            final String requestExchange = amqpProperties.get("request-exchange");
+            final String requestRoutingKey = amqpProperties.get("request-routing-key");
+
+            final String correlationId = UUID.randomUUID().toString();
+            final DiscoveryRequestInfoMessage requestMessage = new DiscoveryRequestInfoMessage();
+            requestMessage.setMessageProperties(
+                    new MessageProperties().withCorrelationId(correlationId).withReplyTo(replyTo).withTimestamp(new Date()));
+
+            final Credentials credentials = new Credentials();
+            credentials.setUsername(vcenterCredentials.getUsername());
+            credentials.setAddress(vcenterCredentials.getEndpointUrl());
+            credentials.setPassword(vcenterCredentials.getPassword());
+            requestMessage.setCredentials(credentials);
+
+            final CompletableFuture<VCenter> promise = vCenterAsyncAcknowledgement.register(correlationId);
+
+            rabbitTemplate.convertAndSend(requestExchange, requestRoutingKey, requestMessage);
+
+            return promise;
+        }
+        catch (ServiceTimeoutException | CapabilityRegistryException e)
+        {
+            return CompletableFuture.completedFuture(null);
+        }
+        catch (MalformedURLException e)
+        {
+            final CompletableFuture<VCenter> promise = new CompletableFuture<>();
+            LOG.error("Malformed URL Exception with url [{}]", vcenterCredentials.getEndpointUrl());
+            promise.completeExceptionally(e);
+            return promise;
+        }
     }
 
     public CompletableFuture<ConsulRegistryResult> requestConsulRegistration(final EndpointCredentials vcenterCredentials)
     {
         final String requiredCapability = "vcenter-consul-register";
+
         try
         {
-            final ListCapabilityProvidersResponse listCapabilityProvidersResponse = capabilityRegistryLookupManager
-                    .listCapabilityProviders(TimeUnit.SECONDS.toMillis(5));
+            new URL(vcenterCredentials.getEndpointUrl());
 
-            for (final CapabilityProvider capabilityProvider : listCapabilityProvidersResponse.getResponse())
+            final List<Capability> matchedCapabilities = fruService.findMatchingCapabilities(requiredCapability);
+            if (matchedCapabilities.isEmpty())
             {
-                for (final Capability capability : capabilityProvider.getCapabilities())
-                {
-                    LOG.debug("Found capability {}", capability.getProfile());
-
-                    if (requiredCapability.equals(capability.getProfile()))
-                    {
-                        LOG.debug("Found matching capability {}", capability.getProfile());
-                        final List<EndpointProperty> endpointProperties = capability.getProviderEndpoint().getEndpointProperties();
-                        final Map<String, String> amqpProperties = endpointProperties.stream()
-                                .collect(Collectors.toMap(EndpointProperty::getName, EndpointProperty::getValue));
-
-                        final String requestExchange = amqpProperties.get("request-exchange");
-                        final String requestRoutingKey = amqpProperties.get("request-routing-key");
-
-                        final TopicExchange responseExchange = new TopicExchange(amqpProperties.get("response-exchange"));
-                        final String responseRoutingKey = amqpProperties.get("response-routing-key").replace("{replyTo}", "." + replyTo);
-
-                        amqpAdmin.declareBinding(BindingBuilder.bind(responseQueue).to(responseExchange).with(responseRoutingKey));
-
-                        LOG.debug("Adding binding {} {}", responseExchange.getName(), responseRoutingKey);
-
-                        final UUID correlationId = UUID.randomUUID();
-                        ConsulRegisterRequestMessage requestMessage = new ConsulRegisterRequestMessage();
-                        requestMessage.setMessageProperties(
-                                new MessageProperties().withCorrelationId(correlationId.toString()).withReplyTo(replyTo)
-                                        .withTimestamp(new Date()));
-
-                        try
-                        {
-                            new URL(vcenterCredentials.getEndpointUrl());
-                        }
-                        catch (MalformedURLException e)
-                        {
-                            final CompletableFuture<ConsulRegistryResult> promise = new CompletableFuture<>();
-                            promise.completeExceptionally(e);
-                            return promise;
-                        }
-                        final RegistrationInfo registrationInfo = new RegistrationInfo(vcenterCredentials.getEndpointUrl(),
-                                vcenterCredentials.getPassword(), vcenterCredentials.getUsername());
-                        requestMessage.setRegistrationInfo(registrationInfo);
-
-                        final CompletableFuture<ConsulRegistryResult> promise = consulRegisterAsyncAcknowledgement
-                                .register(correlationId.toString());
-
-                        rabbitTemplate.convertAndSend(requestExchange, requestRoutingKey, requestMessage);
-
-                        return promise;
-                    }
-                }
+                LOG.info("No matching capability found for capability [{}]", requiredCapability);
+                return CompletableFuture.completedFuture(null);
             }
-        }
-        catch (CapabilityRegistryException e)
-        {
-            LOG.error("Failed while looking up Capability Registry for {}", requiredCapability, e);
-        }
-        catch (ServiceTimeoutException e)
-        {
-            LOG.error("Service timed out while querying Capability Registry");
-        }
-        LOG.error("Unable to find required capability: {}", requiredCapability);
-        return CompletableFuture.completedFuture(null);
+            final Capability matchedCapability = matchedCapabilities.stream().findFirst().get();
+            LOG.debug("Found capability {}", matchedCapability.getProfile());
 
+            final Map<String, String> amqpProperties = fruService.declareBinding(matchedCapability, replyTo);
+
+            final String requestExchange = amqpProperties.get("request-exchange");
+            final String requestRoutingKey = amqpProperties.get("request-routing-key");
+
+            final String correlationId = UUID.randomUUID().toString();
+            ConsulRegisterRequestMessage requestMessage = new ConsulRegisterRequestMessage();
+            requestMessage.setMessageProperties(
+                    new MessageProperties().withCorrelationId(correlationId).withReplyTo(replyTo).withTimestamp(new Date()));
+
+            final RegistrationInfo registrationInfo = new RegistrationInfo(vcenterCredentials.getEndpointUrl(),
+                    vcenterCredentials.getPassword(), vcenterCredentials.getUsername());
+            requestMessage.setRegistrationInfo(registrationInfo);
+
+            final CompletableFuture<ConsulRegistryResult> promise = consulRegisterAsyncAcknowledgement.register(correlationId);
+
+            rabbitTemplate.convertAndSend(requestExchange, requestRoutingKey, requestMessage);
+
+            return promise;
+        }
+        catch (ServiceTimeoutException | CapabilityRegistryException e)
+        {
+            return CompletableFuture.completedFuture(null);
+        }
+        catch (MalformedURLException e)
+        {
+            final CompletableFuture<ConsulRegistryResult> promise = new CompletableFuture<>();
+            LOG.error("Malformed URL Exception with url [{}]", vcenterCredentials.getEndpointUrl());
+            promise.completeExceptionally(e);
+            return promise;
+        }
     }
 
     @Override
-    public CompletableFuture<DestroyVmResponse> requestVmDeletion(final EndpointCredentials vcenterCredentials, final String uuid)
+    public LongRunning<TaskAckMessage, DestroyVmResponse> requestVmDeletion(final EndpointCredentials vcenterCredentials,
+            final String jobId, final HostRepresentation hostRepresentation)
     {
         final String requiredCapability = "vcenter-destroy-virtualMachine";
 
         try
         {
-            final ListCapabilityProvidersResponse listCapabilityProvidersResponse = capabilityRegistryLookupManager
-                    .listCapabilityProviders(TimeUnit.SECONDS.toMillis(5));
-            for (final CapabilityProvider capabilityProvider : listCapabilityProvidersResponse.getResponse())
+            new URL(vcenterCredentials.getEndpointUrl());
+
+            final List<Capability> matchedCapabilities = fruService.findMatchingCapabilities(requiredCapability);
+            if (matchedCapabilities.isEmpty())
             {
-                for (final Capability capability : capabilityProvider.getCapabilities())
-                {
-                    LOG.debug("Found capability {}", capability.getProfile());
-
-                    if (requiredCapability.equals(capability.getProfile()))
-                    {
-                        LOG.debug("Found matching capability {}", capability.getProfile());
-                        final List<EndpointProperty> endpointProperties = capability.getProviderEndpoint().getEndpointProperties();
-                        final Map<String, String> amqpProperties = endpointProperties.stream()
-                                .collect(Collectors.toMap(EndpointProperty::getName, EndpointProperty::getValue));
-
-                        final String requestExchange = amqpProperties.get("request-exchange");
-                        final String requestRoutingKey = amqpProperties.get("request-routing-key");
-
-                        final TopicExchange responseExchange = new TopicExchange(amqpProperties.get("response-exchange"));
-                        final String responseRoutingKey = amqpProperties.get("response-routing-key").replace("{replyTo}", "." + replyTo);
-
-                        amqpAdmin.declareBinding(BindingBuilder.bind(responseQueue).to(responseExchange).with(responseRoutingKey));
-
-                        LOG.debug("Adding binding {} {}", responseExchange.getName(), responseRoutingKey);
-
-                        final UUID correlationId = UUID.randomUUID();
-                        final DestroyVMRequestMessage requestMessage = new DestroyVMRequestMessage();
-                        requestMessage.setUuid(uuid);
-                        final MessageProperties messageProperties = new MessageProperties(new Date(), correlationId.toString(), replyTo);
-                        requestMessage.setMessageProperties(messageProperties);
-                        requestMessage.setCredentials(new Credentials(vcenterCredentials.getEndpointUrl(), vcenterCredentials.getPassword(),
-                                vcenterCredentials.getUsername()));
-
-                        try
-                        {
-                            new URL(vcenterCredentials.getEndpointUrl());
-                        }
-                        catch (MalformedURLException e)
-                        {
-                            final CompletableFuture<DestroyVmResponse> promise = new CompletableFuture<>();
-                            promise.completeExceptionally(e);
-                            return promise;
-                        }
-
-                        final CompletableFuture<DestroyVmResponse> promise = vmDeletionAsyncAcknowledgement
-                                .register(correlationId.toString());
-
-                        rabbitTemplate.convertAndSend(requestExchange, requestRoutingKey, requestMessage);
-
-                        return promise;
-                    }
-                }
+                LOG.info("No matching capability found for capability [{}]", requiredCapability);
+                return new LongRunning<>(CompletableFuture.completedFuture(null), CompletableFuture.completedFuture(null));
             }
-        }
-        catch (CapabilityRegistryException e)
-        {
-            LOG.error("Failed while looking up Capability Registry for {}", requiredCapability, e);
-        }
-        catch (ServiceTimeoutException e)
-        {
-            LOG.error("Service timed out while querying Capability Registry");
-        }
+            final Capability matchedCapability = matchedCapabilities.stream().findFirst().get();
+            LOG.debug("Found capability {}", matchedCapability.getProfile());
 
-        return CompletableFuture.completedFuture(null);
+            final Map<String, String> amqpProperties = fruService.declareBinding(matchedCapability, replyTo);
+
+            final String correlationId = UUID.randomUUID().toString();
+
+            final List<DestroyVMRequestMessage> requestMessages = dataService
+                    .getDestroyVMRequestMessage(jobId, hostRepresentation, vcenterCredentials.getEndpointUrl(),
+                            vcenterCredentials.getPassword(), vcenterCredentials.getUsername());
+
+            if (requestMessages != null && !requestMessages.isEmpty())
+            {
+                final String requestExchange = amqpProperties.get("request-exchange");
+                final String requestRoutingKey = amqpProperties.get("request-routing-key");
+
+                final DestroyVMRequestMessage requestMessage = requestMessages.get(0);
+                requestMessage.setMessageProperties(new MessageProperties(new Date(), correlationId, replyTo));
+
+                final CompletableFuture<TaskAckMessage> acknowledgementPromise = vcenterTaskAckAsyncAcknowledgement.register(correlationId);
+                final CompletableFuture<DestroyVmResponse> completionPromise = vmDeletionAsyncAcknowledgement.register(correlationId);
+
+                rabbitTemplate.convertAndSend(requestExchange, requestRoutingKey, requestMessage);
+
+                return new LongRunning<>(acknowledgementPromise, completionPromise);
+            }
+
+            return new LongRunning<>(CompletableFuture.completedFuture(null), CompletableFuture.completedFuture(null));
+        }
+        catch (ServiceTimeoutException | CapabilityRegistryException e)
+        {
+            return new LongRunning<>(CompletableFuture.completedFuture(null), CompletableFuture.completedFuture(null));
+        }
+        catch (MalformedURLException e)
+        {
+            LOG.error("Malformed URL Exception occurred for Endpoint URL: [{}]", vcenterCredentials.getEndpointUrl());
+            final CompletableFuture<TaskAckMessage> acknowledgementPromise = new CompletableFuture<>();
+            acknowledgementPromise.completeExceptionally(e);
+            final CompletableFuture<DestroyVmResponse> completionPromise = new CompletableFuture<>();
+            completionPromise.completeExceptionally(e);
+            return new LongRunning<>(acknowledgementPromise, completionPromise);
+        }
     }
 
     @Override
-    public CompletableFuture<HostMaintenanceModeResponse> requestHostMaintenanceModeEnable(final EndpointCredentials vcenterCredentials,
-            final String hostname)
+    public LongRunning<TaskAckMessage, HostMaintenanceModeResponse> requestHostMaintenanceModeEnable(
+            final EndpointCredentials vcenterCredentials, final String hostname)
     {
         final String requiredCapability = "vcenter-enterMaintenance";
 
         try
         {
-            final ListCapabilityProvidersResponse listCapabilityProvidersResponse = capabilityRegistryLookupManager
-                    .listCapabilityProviders(TimeUnit.SECONDS.toMillis(5));
-            for (final CapabilityProvider capabilityProvider : listCapabilityProvidersResponse.getResponse())
+            new URL(vcenterCredentials.getEndpointUrl());
+
+            final List<Capability> matchedCapabilities = fruService.findMatchingCapabilities(requiredCapability);
+            if (matchedCapabilities.isEmpty())
             {
-                for (final Capability capability : capabilityProvider.getCapabilities())
-                {
-                    LOG.debug("Found capability {}", capability.getProfile());
-
-                    if (requiredCapability.equals(capability.getProfile()))
-                    {
-                        LOG.debug("Found matching capability {}", capability.getProfile());
-                        final List<EndpointProperty> endpointProperties = capability.getProviderEndpoint().getEndpointProperties();
-                        final Map<String, String> amqpProperties = endpointProperties.stream()
-                                .collect(Collectors.toMap(EndpointProperty::getName, EndpointProperty::getValue));
-
-                        final String requestExchange = amqpProperties.get("request-exchange");
-                        final String requestRoutingKey = amqpProperties.get("request-routing-key");
-
-                        final TopicExchange responseExchange = new TopicExchange(amqpProperties.get("response-exchange"));
-                        final String responseRoutingKey = amqpProperties.get("response-routing-key").replace("{replyTo}", "." + replyTo);
-
-                        amqpAdmin.declareBinding(BindingBuilder.bind(responseQueue).to(responseExchange).with(responseRoutingKey));
-
-                        LOG.debug("Adding binding {} {}", responseExchange.getName(), responseRoutingKey);
-
-                        final UUID correlationId = UUID.randomUUID();
-                        final HostMaintenanceModeRequestMessage requestMessage = new HostMaintenanceModeRequestMessage();
-
-                        final MessageProperties messageProperties = new MessageProperties(new Date(), correlationId.toString(), replyTo);
-                        requestMessage.setMessageProperties(messageProperties);
-                        requestMessage.setCredentials(new Credentials(vcenterCredentials.getEndpointUrl(), vcenterCredentials.getPassword(),
-                                vcenterCredentials.getUsername()));
-
-                        MaintenanceModeRequest maintenanceModeRequest = new MaintenanceModeRequest(hostname, Boolean.TRUE);
-                        requestMessage.setMaintenanceModeRequest(maintenanceModeRequest);
-
-                        try
-                        {
-                            new URL(vcenterCredentials.getEndpointUrl());
-                        }
-                        catch (MalformedURLException e)
-                        {
-                            final CompletableFuture<HostMaintenanceModeResponse> promise = new CompletableFuture<>();
-                            promise.completeExceptionally(e);
-                            return promise;
-                        }
-
-                        final CompletableFuture<HostMaintenanceModeResponse> promise = hostMaintenanceModeAsyncAcknowledgement
-                                .register(correlationId.toString());
-
-                        rabbitTemplate.convertAndSend(requestExchange, requestRoutingKey, requestMessage);
-
-                        return promise;
-                    }
-                }
+                LOG.info("No matching capability found for capability [{}]", requiredCapability);
+                return new LongRunning<>(CompletableFuture.completedFuture(null), CompletableFuture.completedFuture(null));
             }
-        }
-        catch (CapabilityRegistryException e)
-        {
-            LOG.error("Failed while looking up Capability Registry for {}", requiredCapability, e);
-        }
-        catch (ServiceTimeoutException e)
-        {
-            LOG.error("Service timed out while querying Capability Registry");
-        }
+            final Capability matchedCapability = matchedCapabilities.stream().findFirst().get();
+            LOG.debug("Found capability {}", matchedCapability.getProfile());
 
-        return CompletableFuture.completedFuture(null);
+            final Map<String, String> amqpProperties = fruService.declareBinding(matchedCapability, replyTo);
+
+            final String correlationId = UUID.randomUUID().toString();
+            final HostMaintenanceModeRequestMessage requestMessage = new HostMaintenanceModeRequestMessage();
+
+            final MessageProperties messageProperties = new MessageProperties(new Date(), correlationId, replyTo);
+            requestMessage.setMessageProperties(messageProperties);
+            requestMessage.setCredentials(new Credentials(vcenterCredentials.getEndpointUrl(), vcenterCredentials.getPassword(),
+                    vcenterCredentials.getUsername()));
+
+            MaintenanceModeRequest maintenanceModeRequest = new MaintenanceModeRequest(hostname, Boolean.TRUE);
+            requestMessage.setMaintenanceModeRequest(maintenanceModeRequest);
+
+            final CompletableFuture<TaskAckMessage> acknowledgementPromise = vcenterTaskAckAsyncAcknowledgement.register(correlationId);
+            final CompletableFuture<HostMaintenanceModeResponse> completionPromise = hostMaintenanceModeAsyncAcknowledgement
+                    .register(correlationId);
+
+            final String requestExchange = amqpProperties.get("request-exchange");
+            final String requestRoutingKey = amqpProperties.get("request-routing-key");
+
+            rabbitTemplate.convertAndSend(requestExchange, requestRoutingKey, requestMessage);
+
+            return new LongRunning<>(acknowledgementPromise, completionPromise);
+        }
+        catch (ServiceTimeoutException | CapabilityRegistryException e)
+        {
+            return new LongRunning<>(CompletableFuture.completedFuture(null), CompletableFuture.completedFuture(null));
+        }
+        catch (MalformedURLException e)
+        {
+            LOG.error("Malformed URL Exception occurred for Endpoint URL: [{}]", vcenterCredentials.getEndpointUrl());
+            final CompletableFuture<TaskAckMessage> acknowledgementPromise = new CompletableFuture<>();
+            acknowledgementPromise.completeExceptionally(e);
+            final CompletableFuture<HostMaintenanceModeResponse> completionPromise = new CompletableFuture<>();
+            completionPromise.completeExceptionally(e);
+            return new LongRunning<>(acknowledgementPromise, completionPromise);
+        }
     }
 
     @Override
-    public CompletableFuture<VCenterHostPowerOperationStatus> requestHostPowerOff(EndpointCredentials vcenterCredentials, String hostname)
+    public LongRunning<TaskAckMessage, VCenterHostPowerOperationStatus> requestHostPowerOff(final EndpointCredentials vcenterCredentials,
+            final String hostname)
     {
         final String requiredCapability = "vcenter-powercommand";
 
         try
         {
-            final ListCapabilityProvidersResponse listCapabilityProvidersResponse = capabilityRegistryLookupManager
-                    .listCapabilityProviders(TimeUnit.SECONDS.toMillis(5));
+            new URL(vcenterCredentials.getEndpointUrl());
 
-            if (listCapabilityProvidersResponse == null)
+            final List<Capability> matchedCapabilities = fruService.findMatchingCapabilities(requiredCapability);
+            if (matchedCapabilities.isEmpty())
             {
-                return CompletableFuture.completedFuture(null);
+                LOG.info("No matching capability found for capability [{}]", requiredCapability);
+                return new LongRunning<>(CompletableFuture.completedFuture(null), CompletableFuture.completedFuture(null));
             }
+            final Capability matchedCapability = matchedCapabilities.stream().findFirst().get();
+            LOG.debug("Found capability {}", matchedCapability.getProfile());
 
-            final List<CapabilityProvider> capabilityProviders = listCapabilityProvidersResponse.getResponse();
+            final Map<String, String> amqpProperties = fruService.declareBinding(matchedCapability, replyTo);
 
-            for (CapabilityProvider capabilityProvider : capabilityProviders)
-            {
-                for (Capability capability : capabilityProvider.getCapabilities())
-                {
-                    LOG.debug("Found capability {}", capability.getProfile());
+            final String requestExchange = amqpProperties.get("request-exchange");
+            final String requestRoutingKey = amqpProperties.get("request-routing-key");
 
-                    if (requiredCapability.equals(capability.getProfile()))
-                    {
-                        LOG.debug("Found matching capability {}", capability.getProfile());
-                        final List<EndpointProperty> endpointProperties = capability.getProviderEndpoint().getEndpointProperties();
-                        final Map<String, String> amqpProperties = endpointProperties.stream()
-                                .collect(Collectors.toMap(EndpointProperty::getName, EndpointProperty::getValue));
+            final String correlationId = UUID.randomUUID().toString();
+            final HostPowerOperationRequestMessage requestMessage = new HostPowerOperationRequestMessage();
+            requestMessage.setMessageProperties(
+                    new MessageProperties().withCorrelationId(correlationId).withReplyTo(replyTo).withTimestamp(new Date()));
 
-                        final String requestExchange = amqpProperties.get("request-exchange");
-                        final String requestRoutingKey = amqpProperties.get("request-routing-key");
+            final Credentials credentials = new Credentials(vcenterCredentials.getEndpointUrl(), vcenterCredentials.getPassword(),
+                    vcenterCredentials.getUsername());
+            requestMessage.setCredentials(credentials);
 
-                        final TopicExchange responseExchange = new TopicExchange(amqpProperties.get("response-exchange"));
-                        final String responseRoutingKey = amqpProperties.get("response-routing-key").replace("{replyTo}", "." + replyTo);
+            final PowerOperationRequest powerOperationRequest = new PowerOperationRequest(hostname,
+                    PowerOperationRequest.PowerOperation.POWER_OFF);
 
-                        amqpAdmin.declareBinding(BindingBuilder.bind(responseQueue).to(responseExchange).with(responseRoutingKey));
+            requestMessage.setPowerOperationRequest(powerOperationRequest);
 
-                        LOG.debug("Adding binding {} {}", responseExchange.getName(), responseRoutingKey);
+            final CompletableFuture<TaskAckMessage> acknowledgementPromise = vcenterTaskAckAsyncAcknowledgement.register(correlationId);
+            final CompletableFuture<VCenterHostPowerOperationStatus> completionPromise = vCenterHostPowerAsyncAcknowledgement
+                    .register(correlationId);
 
-                        final UUID correlationId = UUID.randomUUID();
-                        HostPowerOperationRequestMessage requestMessage = new HostPowerOperationRequestMessage();
-                        requestMessage.setMessageProperties(
-                                new MessageProperties().withCorrelationId(correlationId.toString()).withReplyTo(replyTo)
-                                        .withTimestamp(new Date()));
+            rabbitTemplate.convertAndSend(requestExchange, requestRoutingKey, requestMessage);
 
-                        try
-                        {
-                            new URL(vcenterCredentials.getEndpointUrl());
-                        }
-                        catch (MalformedURLException e)
-                        {
-                            final CompletableFuture<VCenterHostPowerOperationStatus> promise = new CompletableFuture<>();
-                            promise.completeExceptionally(e);
-                            return promise;
-                        }
-
-                        final Credentials credentials = new Credentials(vcenterCredentials.getEndpointUrl(),
-                                vcenterCredentials.getPassword(), vcenterCredentials.getUsername());
-                        requestMessage.setCredentials(credentials);
-
-                        //TODO hostname is blank BUT SHOULD be filled with appropriate data
-                        PowerOperationRequest powerOperationRequest = new PowerOperationRequest(hostname,
-                                PowerOperationRequest.PowerOperation.POWER_OFF);
-
-                        requestMessage.setPowerOperationRequest(powerOperationRequest);
-
-                        final CompletableFuture<VCenterHostPowerOperationStatus> promise = vCenterHostPowerAsyncAcknowledgement
-                                .register(correlationId.toString());
-
-                        rabbitTemplate.convertAndSend(requestExchange, requestRoutingKey, requestMessage);
-
-                        return promise;
-                    }
-                }
-            }
+            return new LongRunning<>(acknowledgementPromise, completionPromise);
         }
-        catch (CapabilityRegistryException e)
+        catch (ServiceTimeoutException | CapabilityRegistryException e)
         {
-            LOG.error("Failed while looking up Capability Registry for {}", requiredCapability, e);
+            return new LongRunning<>(CompletableFuture.completedFuture(null), CompletableFuture.completedFuture(null));
         }
-        catch (ServiceTimeoutException e)
+        catch (MalformedURLException e)
         {
-            LOG.error("Service timed out while querying Capability Registry");
+            LOG.error("Malformed URL Exception occurred for Endpoint URL: [{}]", vcenterCredentials.getEndpointUrl());
+            final CompletableFuture<TaskAckMessage> acknowledgementPromise = new CompletableFuture<>();
+            acknowledgementPromise.completeExceptionally(e);
+            final CompletableFuture<VCenterHostPowerOperationStatus> completionPromise = new CompletableFuture<>();
+            completionPromise.completeExceptionally(e);
+            return new LongRunning<>(acknowledgementPromise, completionPromise);
         }
-
-        return null;
     }
 
     @Override
-    public CompletableFuture<ClusterOperationResponse> requestHostRemoval(final EndpointCredentials vcenterCredentials,
-            final String clusterId, final String hostname)
+    public LongRunning<TaskAckMessage, ClusterOperationResponse> requestHostRemoval(final EndpointCredentials vcenterCredentials, final String hostname)
     {
         final String requiredCapability = "vcenter-remove-host";
+
         try
         {
-            final ListCapabilityProvidersResponse listCapabilityProvidersResponse = capabilityRegistryLookupManager
-                    .listCapabilityProviders(TimeUnit.SECONDS.toMillis(5));
+            new URL(vcenterCredentials.getEndpointUrl());
 
-            for (final CapabilityProvider capabilityProvider : listCapabilityProvidersResponse.getResponse())
+            final List<Capability> matchedCapabilities = fruService.findMatchingCapabilities(requiredCapability);
+            if (matchedCapabilities.isEmpty())
             {
-                for (final Capability capability : capabilityProvider.getCapabilities())
-                {
-                    LOG.debug("Found capability {}", capability.getProfile());
-
-                    if (requiredCapability.equals(capability.getProfile()))
-                    {
-                        LOG.debug("Found matching capability {}", capability.getProfile());
-                        final List<EndpointProperty> endpointProperties = capability.getProviderEndpoint().getEndpointProperties();
-                        final Map<String, String> amqpProperties = endpointProperties.stream()
-                                .collect(Collectors.toMap(EndpointProperty::getName, EndpointProperty::getValue));
-
-                        final String requestExchange = amqpProperties.get("request-exchange");
-                        final String requestRoutingKey = amqpProperties.get("request-routing-key");
-
-                        final TopicExchange responseExchange = new TopicExchange(amqpProperties.get("response-exchange"));
-                        final String responseRoutingKey = amqpProperties.get("response-routing-key").replace("{replyTo}", "." + replyTo);
-
-                        amqpAdmin.declareBinding(BindingBuilder.bind(responseQueue).to(responseExchange).with(responseRoutingKey));
-
-                        LOG.debug("Adding binding {} {}", responseExchange.getName(), responseRoutingKey);
-
-                        final UUID correlationId = UUID.randomUUID();
-                        final ClusterOperationRequestMessage requestMessage = new ClusterOperationRequestMessage();
-                        requestMessage.setCredentials(new Credentials(vcenterCredentials.getEndpointUrl(), vcenterCredentials.getPassword(),
-                                vcenterCredentials.getUsername()));
-                        final ClusterOperationRequest clusterOperationRequest = new ClusterOperationRequest();
-                        clusterOperationRequest.setHostName(hostname);
-                        //TODO: If not required remove the cluster id
-                        clusterOperationRequest.setClusterID(clusterId);
-                        clusterOperationRequest.setClusterOperation(ClusterOperationRequest.ClusterOperation.REMOVE_HOST);
-                        requestMessage.setClusterOperationRequest(clusterOperationRequest);
-
-                        try
-                        {
-                            new URL(vcenterCredentials.getEndpointUrl());
-                        }
-                        catch (MalformedURLException e)
-                        {
-                            final CompletableFuture<ClusterOperationResponse> promise = new CompletableFuture<>();
-                            promise.completeExceptionally(e);
-                            return promise;
-                        }
-
-                        final CompletableFuture<ClusterOperationResponse> promise = vcenterClusterOperationAsyncAcknowledgement
-                                .register(correlationId.toString());
-
-                        LOG.info("Host removal request with correlation id [{}]", correlationId.toString());
-
-                        rabbitTemplate.convertAndSend(requestExchange, requestRoutingKey, requestMessage);
-
-                        return promise;
-                    }
-                }
+                LOG.info("No matching capability found for capability [{}]", requiredCapability);
+                return new LongRunning<>(CompletableFuture.completedFuture(null), CompletableFuture.completedFuture(null));
             }
+            final Capability matchedCapability = matchedCapabilities.stream().findFirst().get();
+            LOG.debug("Found capability {}", matchedCapability.getProfile());
+
+            final Map<String, String> amqpProperties = fruService.declareBinding(matchedCapability, replyTo);
+
+            final String requestExchange = amqpProperties.get("request-exchange");
+            final String requestRoutingKey = amqpProperties.get("request-routing-key");
+
+            final String correlationId = UUID.randomUUID().toString();
+            final ClusterOperationRequestMessage requestMessage = new ClusterOperationRequestMessage();
+            requestMessage.setCredentials(new Credentials(vcenterCredentials.getEndpointUrl(), vcenterCredentials.getPassword(),
+                    vcenterCredentials.getUsername()));
+
+            final ClusterOperationRequest clusterOperationRequest = new ClusterOperationRequest();
+            clusterOperationRequest.setHostName(hostname);
+            clusterOperationRequest.setClusterOperation(ClusterOperationRequest.ClusterOperation.REMOVE_HOST);
+            requestMessage.setClusterOperationRequest(clusterOperationRequest);
+
+            final CompletableFuture<TaskAckMessage> acknowledgementPromise = vcenterTaskAckAsyncAcknowledgement.register(correlationId);
+            final CompletableFuture<ClusterOperationResponse> completionPromise = vcenterClusterOperationAsyncAcknowledgement
+                    .register(correlationId);
+
+            LOG.info("Host removal request with correlation id [{}]", correlationId);
+
+            rabbitTemplate.convertAndSend(requestExchange, requestRoutingKey, requestMessage);
+
+            return new LongRunning<>(acknowledgementPromise, completionPromise);
+
         }
-        catch (CapabilityRegistryException e)
+        catch (ServiceTimeoutException | CapabilityRegistryException e)
         {
-            LOG.error("Failed while looking up Capability Registry for {}", requiredCapability, e);
+            return new LongRunning<>(CompletableFuture.completedFuture(null), CompletableFuture.completedFuture(null));
         }
-        catch (ServiceTimeoutException e)
+        catch (MalformedURLException e)
         {
-            LOG.error("Service timed out while querying Capability Registry");
+            LOG.error("Malformed URL Exception occurred for operation Host Removal with Endpoint URL: [{}]",
+                    vcenterCredentials.getEndpointUrl());
+            final CompletableFuture<TaskAckMessage> acknowledgementPromise = new CompletableFuture<>();
+            acknowledgementPromise.completeExceptionally(e);
+            final CompletableFuture<ClusterOperationResponse> completionPromise = new CompletableFuture<>();
+            completionPromise.completeExceptionally(e);
+            return new LongRunning<>(acknowledgementPromise, completionPromise);
         }
-        LOG.error("Unable to find required capability: {}", requiredCapability);
-        return CompletableFuture.completedFuture(null);
     }
 
     @Override
-    public CompletableFuture<ClusterOperationResponse> requestHostAddition(final EndpointCredentials vcenterCredentials,
+    public LongRunning<TaskAckMessage, ClusterOperationResponse> requestHostAddition(final EndpointCredentials vcenterCredentials,
             final String hostname, final String clusterId, final String hostUsername, final String hostPassword)
     {
         final String requiredCapability = "vcenter-addhostvcenter";
+
         try
         {
-            final ListCapabilityProvidersResponse listCapabilityProvidersResponse = capabilityRegistryLookupManager
-                    .listCapabilityProviders(TimeUnit.SECONDS.toMillis(5));
+            new URL(vcenterCredentials.getEndpointUrl());
 
-            for (final CapabilityProvider capabilityProvider : listCapabilityProvidersResponse.getResponse())
+            final List<Capability> matchedCapabilities = fruService.findMatchingCapabilities(requiredCapability);
+            if (matchedCapabilities.isEmpty())
             {
-                for (final Capability capability : capabilityProvider.getCapabilities())
-                {
-                    LOG.debug("Found capability {}", capability.getProfile());
-
-                    if (requiredCapability.equals(capability.getProfile()))
-                    {
-                        LOG.debug("Found matching capability {}", capability.getProfile());
-                        final List<EndpointProperty> endpointProperties = capability.getProviderEndpoint().getEndpointProperties();
-                        final Map<String, String> amqpProperties = endpointProperties.stream()
-                                .collect(Collectors.toMap(EndpointProperty::getName, EndpointProperty::getValue));
-
-                        final String requestExchange = amqpProperties.get("request-exchange");
-                        final String requestRoutingKey = amqpProperties.get("request-routing-key");
-
-                        final TopicExchange responseExchange = new TopicExchange(amqpProperties.get("response-exchange"));
-                        final String responseRoutingKey = amqpProperties.get("response-routing-key").replace("{replyTo}", "." + replyTo);
-
-                        amqpAdmin.declareBinding(BindingBuilder.bind(responseQueue).to(responseExchange).with(responseRoutingKey));
-
-                        LOG.debug("Adding binding {} {}", responseExchange.getName(), responseRoutingKey);
-
-                        final UUID correlationId = UUID.randomUUID();
-                        final ClusterOperationRequestMessage requestMessage = new ClusterOperationRequestMessage();
-                        requestMessage.setCredentials(new Credentials(vcenterCredentials.getEndpointUrl(), vcenterCredentials.getPassword(),
-                                vcenterCredentials.getUsername()));
-                        final ClusterOperationRequest clusterOperationRequest = new ClusterOperationRequest();
-                        clusterOperationRequest.setHostName(hostname);
-                        clusterOperationRequest.setClusterID(clusterId);
-                        clusterOperationRequest.setUserName(hostUsername);
-                        clusterOperationRequest.setPassword(hostPassword);
-                        clusterOperationRequest.setClusterOperation(ClusterOperationRequest.ClusterOperation.ADD_HOST);
-                        requestMessage.setClusterOperationRequest(clusterOperationRequest);
-
-                        try
-                        {
-                            new URL(vcenterCredentials.getEndpointUrl());
-                        }
-                        catch (MalformedURLException e)
-                        {
-                            final CompletableFuture<ClusterOperationResponse> promise = new CompletableFuture<>();
-                            promise.completeExceptionally(e);
-                            return promise;
-                        }
-
-                        final CompletableFuture<ClusterOperationResponse> promise = vcenterClusterOperationAsyncAcknowledgement
-                                .register(correlationId.toString());
-
-                        LOG.info("Host addition request with correlation id [{}]", correlationId.toString());
-
-                        rabbitTemplate.convertAndSend(requestExchange, requestRoutingKey, requestMessage);
-
-                        return promise;
-                    }
-                }
+                LOG.info("No matching capability found for capability [{}]", requiredCapability);
+                return new LongRunning<>(CompletableFuture.completedFuture(null), CompletableFuture.completedFuture(null));
             }
+            final Capability matchedCapability = matchedCapabilities.stream().findFirst().get();
+            LOG.debug("Found capability {}", matchedCapability.getProfile());
+
+            final Map<String, String> amqpProperties = fruService.declareBinding(matchedCapability, replyTo);
+
+            final String requestExchange = amqpProperties.get("request-exchange");
+            final String requestRoutingKey = amqpProperties.get("request-routing-key");
+
+            final String correlationId = UUID.randomUUID().toString();
+
+            final ClusterOperationRequestMessage requestMessage = new ClusterOperationRequestMessage();
+            requestMessage.setCredentials(new Credentials(vcenterCredentials.getEndpointUrl(), vcenterCredentials.getPassword(),
+                    vcenterCredentials.getUsername()));
+            final ClusterOperationRequest clusterOperationRequest = new ClusterOperationRequest();
+            clusterOperationRequest.setHostName(hostname);
+            clusterOperationRequest.setClusterID(clusterId);
+            clusterOperationRequest.setUserName(hostUsername);
+            clusterOperationRequest.setPassword(hostPassword);
+            clusterOperationRequest.setClusterOperation(ClusterOperationRequest.ClusterOperation.ADD_HOST);
+            requestMessage.setClusterOperationRequest(clusterOperationRequest);
+
+            final CompletableFuture<TaskAckMessage> acknowledgementPromise = vcenterTaskAckAsyncAcknowledgement.register(correlationId);
+            final CompletableFuture<ClusterOperationResponse> completionPromise = vcenterClusterOperationAsyncAcknowledgement.register(correlationId);
+
+            LOG.info("Host addition request with correlation id [{}]", correlationId);
+
+            rabbitTemplate.convertAndSend(requestExchange, requestRoutingKey, requestMessage);
+
+            return new LongRunning<>(acknowledgementPromise, completionPromise);
+
         }
-        catch (CapabilityRegistryException e)
+        catch (ServiceTimeoutException | CapabilityRegistryException e)
         {
-            LOG.error("Failed while looking up Capability Registry for {}", requiredCapability, e);
+            return new LongRunning<>(CompletableFuture.completedFuture(null), CompletableFuture.completedFuture(null));
         }
-        catch (ServiceTimeoutException e)
+        catch (MalformedURLException e)
         {
-            LOG.error("Service timed out while querying Capability Registry");
+            LOG.error("Malformed URL Exception occurred for operation Host Addition with Endpoint URL: [{}]",
+                    vcenterCredentials.getEndpointUrl());
+            final CompletableFuture<TaskAckMessage> acknowledgementPromise = new CompletableFuture<>();
+            acknowledgementPromise.completeExceptionally(e);
+            final CompletableFuture<ClusterOperationResponse> completionPromise = new CompletableFuture<>();
+            completionPromise.completeExceptionally(e);
+            return new LongRunning<>(acknowledgementPromise, completionPromise);
         }
-        LOG.error("Unable to find required capability: {}", requiredCapability);
-        return CompletableFuture.completedFuture(null);
     }
 }

@@ -41,6 +41,7 @@ def test_fru_cli_chk():
     assert file_present.file_present(file_name=program, exe=True), 'CLI Not Found.\nPlease confirm Workflow-cli Present'
     print('\nWorkflow-cli Present.')
 
+
 @pytest.mark.fru_paqx_parent
 @pytest.mark.fru_mvp
 def test_fru_api():
@@ -60,8 +61,8 @@ def test_fru_api():
     # Assert
     assert response.status_code == 200, 'Unexpected API Response Code'
     print('\nResponse Successful.')
-
-
+    
+    
 @pytest.mark.fru_paqx_parent
 @pytest.mark.fru_mvp
 def test_fru_cli_version():
@@ -141,7 +142,7 @@ def test_fru_cli_target():
         raise Exception(err)
 
     # Assert
-    assert 'Target set to https://{}:18443'.format(ipaddress) in response
+    assert 'Target set to https://{}:18443'.format(ipaddress) in response, 'Target not Set'
     print('Target Set.')
 
 
@@ -150,7 +151,7 @@ def test_fru_cli_target():
 def test_cli_target_file():
     """
     Description:
-        The following test checks whether the target file (.cli) has been created and contains the correct target.
+        The following test checks whether the target file (.cli) has been created and contains the correct target IP.
     :return: None
     """
     # Arrange
@@ -171,10 +172,10 @@ def test_cli_target_file():
         with open(path+dir_seperator+file, 'r') as cli_file:
             content = cli_file.read()
     # Assert
-            assert ipaddress in content, "Target IP Incorrect"
+            assert ipaddress in content, 'Target IP Incorrect'
             print('\nTarget IP Correct.')
     else:
-        assert path, "Target File not Created"
+        assert path, 'Target File not Created'
 
 ###### In Development ######
 

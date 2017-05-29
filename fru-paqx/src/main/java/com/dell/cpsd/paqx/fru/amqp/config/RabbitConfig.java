@@ -10,12 +10,19 @@ import com.dell.cpsd.common.rabbitmq.MessageAnnotationProcessor;
 import com.dell.cpsd.paqx.fru.amqp.model.FruErrorMessage;
 import com.dell.cpsd.paqx.fru.amqp.model.ListNodesRequest;
 import com.dell.cpsd.paqx.fru.amqp.model.ListNodesResponse;
-import com.dell.cpsd.storage.capabilities.api.ListStorageRequestMessage;
-import com.dell.cpsd.storage.capabilities.api.ListStorageResponseMessage;
+import com.dell.cpsd.storage.capabilities.api.*;
+import com.dell.cpsd.virtualization.capabilities.api.ClusterOperationRequestMessage;
+import com.dell.cpsd.virtualization.capabilities.api.ClusterOperationResponseMessage;
 import com.dell.cpsd.virtualization.capabilities.api.ConsulRegisterRequestMessage;
 import com.dell.cpsd.virtualization.capabilities.api.ConsulRegisterResponseMessage;
+import com.dell.cpsd.virtualization.capabilities.api.DestroyVMRequestMessage;
+import com.dell.cpsd.virtualization.capabilities.api.DestroyVMResponseMessage;
 import com.dell.cpsd.virtualization.capabilities.api.DiscoveryRequestInfoMessage;
 import com.dell.cpsd.virtualization.capabilities.api.DiscoveryResponseInfoMessage;
+import com.dell.cpsd.virtualization.capabilities.api.HostMaintenanceModeRequestMessage;
+import com.dell.cpsd.virtualization.capabilities.api.HostMaintenanceModeResponseMessage;
+import com.dell.cpsd.virtualization.capabilities.api.HostPowerOperationRequestMessage;
+import com.dell.cpsd.virtualization.capabilities.api.HostPowerOperationResponseMessage;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -155,6 +162,23 @@ public class RabbitConfig {
 
         messageClasses.add(ConsulRegisterRequestMessage.class);
         messageClasses.add(ConsulRegisterResponseMessage.class);
+
+        messageClasses.add(SIONodeRemoveRequestMessage.class);
+        messageClasses.add(SIONodeRemoveResponseMessage.class);
+
+        messageClasses.add(OrderAckMessage.class);
+
+        messageClasses.add(HostPowerOperationRequestMessage.class);
+        messageClasses.add(HostPowerOperationResponseMessage.class);
+
+        messageClasses.add(ClusterOperationRequestMessage.class);
+        messageClasses.add(ClusterOperationResponseMessage.class);
+
+        messageClasses.add(DestroyVMRequestMessage.class);
+        messageClasses.add(DestroyVMResponseMessage.class);
+
+        messageClasses.add(HostMaintenanceModeRequestMessage.class);
+        messageClasses.add(HostMaintenanceModeResponseMessage.class);
 
         messageClasses.add(com.dell.cpsd.storage.capabilities.api.ConsulRegisterRequestMessage.class);
         messageClasses.add(com.dell.cpsd.storage.capabilities.api.ConsulRegisterResponseMessage.class);

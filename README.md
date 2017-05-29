@@ -8,7 +8,7 @@ The FRU PAQX service implements a VxRack FLEX Field Replacement Unit (FRU) workf
 
 ## Documentation
 
-The documentation is hosted at http://dellemc-symphony.readthedocs.io/.
+You can find additional documentation for Project Symphony at [dellemc-symphony.readthedocs.io][documentation].
 
 ## API overview
 
@@ -20,14 +20,16 @@ You can see the complete list of possible API calls by exploring the Swagger UI 
 
 ## Before you begin
 
-Make sure the following is installed:
-```
-Apache Maven 3.0.5+
-Docker 1.12+
-Docker Compose 1.8.0+
-Java Development Kit (version 8)
-RabbitMQ  3.6.6
-```
+For Linux development, install the rpm-build package to enable RPM creation.
+For Windows development, install cygwin or an equivalent and ensure the rpm-build package is installed.
+
+Verify that the following tools are installed:
+ 
+* Apache Maven 3.0.5+
+* Docker 1.12+
+* Docker Compose 1.8.0+
+* Java Development Kit (version 8)
+* RabbitMQ 3.6.6
 
 ## Building
 
@@ -37,6 +39,16 @@ mvn clean install
 ```
 
 ## Deploying
+
+If installing the RPM for the first time, run this locally:
+```bash
+rpm -ivh <RPM Name>
+```
+ 
+If upgrading an existing RPM, run this locally:
+```bash
+rpm -Uvh <RPM Name>
+```
 
 The output of running the build step is a tagged Docker image.
 You can run this locally with the following command:
@@ -87,9 +99,9 @@ Execute the rackhd-endpoint API call (shown in the href value above) with a POST
 
 ```
 {
-  "endpointUrl": "http://10.10.10.10:8080",
-  "username": "admin",
-  "password": "admin"
+  "endpointUrl": "http://<ip-address>:<port>",
+  "username": "<username>",
+  "password": "<password>"
 }
 
 ```

@@ -22,18 +22,20 @@ public class LinkRepresentation
     private String href   = "";
     private String type   = "";
     private String method = "";
+    private int nextStepDelay;
 
-    public LinkRepresentation(final String rel, final String href, final String type, final String httpMethod)
+    public LinkRepresentation(final String rel, final String href, final String type, final String httpMethod, final int nextStepDelay)
     {
         this.rel = rel;
         this.type = type;
         this.href = href;
         this.method = httpMethod;
+        this.nextStepDelay = nextStepDelay;
     }
 
-    public static LinkRepresentation from(final Link link, final String httpMethod)
+    public static LinkRepresentation from(final Link link, final String httpMethod, final int nextStepDelay)
     {
-        return new LinkRepresentation(link.getRel(), link.getUri().toASCIIString(), link.getType(), httpMethod);
+        return new LinkRepresentation(link.getRel(), link.getUri().toASCIIString(), link.getType(), httpMethod, nextStepDelay);
     }
 
     public String getRel()
@@ -76,6 +78,16 @@ public class LinkRepresentation
         this.method = method;
     }
 
+    public int getNextStepDelay()
+    {
+        return nextStepDelay;
+    }
+
+    public void setNextStepDelay(final int nextStepDelay)
+    {
+        this.nextStepDelay = nextStepDelay;
+    }
+
     @Override
     public boolean equals(final Object o)
     {
@@ -91,13 +103,13 @@ public class LinkRepresentation
 
         final LinkRepresentation that = (LinkRepresentation) o;
 
-        return new EqualsBuilder().append(rel, that.rel).append(type, that.type).append(href, that.href).append(method, that.method)
+        return new EqualsBuilder().append(rel, that.rel).append(type, that.type).append(href, that.href).append(method, that.method).append(nextStepDelay, that.nextStepDelay)
                 .isEquals();
     }
 
     @Override
     public int hashCode()
     {
-        return new HashCodeBuilder(17, 37).append(rel).append(type).append(href).append(method).toHashCode();
+        return new HashCodeBuilder(17, 37).append(rel).append(type).append(href).append(method).append(nextStepDelay).toHashCode();
     }
 }

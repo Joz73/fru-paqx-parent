@@ -6,10 +6,71 @@
 package com.dell.cpsd.paqx.fru.transformers;
 
 import com.dell.cpsd.paqx.fru.rest.dto.vCenterSystemProperties;
-import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.*;
-import com.dell.cpsd.virtualization.capabilities.api.*;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.ClusterDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.DVPortSettingDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.DVSSecurityPolicyDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.DataCenterDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.DatastoreDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.DatastoreSummaryDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.DistributedVirtualSwicthPortConnectionDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.DistributedVirtualSwitchHostMemberConfigInfoDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.DistributedVirtualSwitchHostMemberDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.DistributedVirtualSwitchHostMemberPnicBackingDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.DistributedVirtualSwitchHostMemberPnicSpecDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.DvSwitchDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.GuestInfoDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.GuestNicInfoDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.HostConfigInfoDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.HostDnsConfigDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.HostIpConfigDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.HostIpRouteConfigDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.HostNetworkInfoDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.HostNetworkPolicyDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.HostNetworkSecurityPolicyDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.HostSystemDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.HostVirtualNicDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.HostVirtualNicSpecDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.HostVirtualSwitchDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.HostVirtualSwitchSpecDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.NetworkDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.PhysicalNicDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.VMwareDVSConfigInfoDto;
+import com.dell.cpsd.paqx.fru.rest.dto.vcenter.discovery.VirtualMachineDto;
+import com.dell.cpsd.virtualization.capabilities.api.Cluster;
+import com.dell.cpsd.virtualization.capabilities.api.DVPortSetting;
+import com.dell.cpsd.virtualization.capabilities.api.DVSSecurityPolicy;
+import com.dell.cpsd.virtualization.capabilities.api.Datacenter;
+import com.dell.cpsd.virtualization.capabilities.api.Datastore;
+import com.dell.cpsd.virtualization.capabilities.api.DatastoreSummary;
+import com.dell.cpsd.virtualization.capabilities.api.DiscoveryResponseInfoMessage;
+import com.dell.cpsd.virtualization.capabilities.api.DistributedVirtualSwicthPortConnection;
+import com.dell.cpsd.virtualization.capabilities.api.DistributedVirtualSwitchHostMember;
+import com.dell.cpsd.virtualization.capabilities.api.DistributedVirtualSwitchHostMemberConfigInfo;
+import com.dell.cpsd.virtualization.capabilities.api.DistributedVirtualSwitchHostMemberPnicBacking;
+import com.dell.cpsd.virtualization.capabilities.api.DistributedVirtualSwitchHostMemberPnicSpec;
+import com.dell.cpsd.virtualization.capabilities.api.DvSwitch;
+import com.dell.cpsd.virtualization.capabilities.api.GuestInfo;
+import com.dell.cpsd.virtualization.capabilities.api.GuestNicInfo;
+import com.dell.cpsd.virtualization.capabilities.api.HostConfigInfo;
+import com.dell.cpsd.virtualization.capabilities.api.HostDnsConfig;
+import com.dell.cpsd.virtualization.capabilities.api.HostIpConfig;
+import com.dell.cpsd.virtualization.capabilities.api.HostIpRouteConfig;
+import com.dell.cpsd.virtualization.capabilities.api.HostNetworkInfo;
+import com.dell.cpsd.virtualization.capabilities.api.HostNetworkPolicy;
+import com.dell.cpsd.virtualization.capabilities.api.HostNetworkSecurityPolicy;
+import com.dell.cpsd.virtualization.capabilities.api.HostSystem;
+import com.dell.cpsd.virtualization.capabilities.api.HostVirtualNic;
+import com.dell.cpsd.virtualization.capabilities.api.HostVirtualNicSpec;
+import com.dell.cpsd.virtualization.capabilities.api.HostVirtualSwitch;
+import com.dell.cpsd.virtualization.capabilities.api.HostVirtualSwitchSpec;
+import com.dell.cpsd.virtualization.capabilities.api.Network;
+import com.dell.cpsd.virtualization.capabilities.api.PhysicalNic;
+import com.dell.cpsd.virtualization.capabilities.api.VMwareDVSConfigInfo;
+import com.dell.cpsd.virtualization.capabilities.api.VirtualMachine;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -50,8 +111,14 @@ public class DiscoveryInfoToVCenterSystemPropertiesTransformer {
 
     }
 
-    private List<ClusterDto> transformClusters(final List<Cluster> clusters) {
-        if (clusters == null) {
+    private List<ClusterDto> transformClusters(final Map<String,Cluster> clustersMap) {
+        if (clustersMap == null) {
+            return null;
+        }
+
+        Collection<Cluster> clusters =clustersMap.values();
+        if (clusters==null)
+        {
             return null;
         }
         return clusters.stream().filter(Objects::nonNull).map(x -> transformCluster(x)).collect(Collectors.toList());
@@ -68,8 +135,14 @@ public class DiscoveryInfoToVCenterSystemPropertiesTransformer {
         return returnVal;
     }
 
-    private List<HostSystemDto> transformHostSystems(final List<HostSystem> hosts) {
-        if (hosts == null) {
+    private List<HostSystemDto> transformHostSystems(final Map<String,HostSystem> hostsMap) {
+        if (hostsMap == null) {
+            return null;
+        }
+
+        Collection<HostSystem> hosts =hostsMap.values();
+        if (hosts==null)
+        {
             return null;
         }
         return hosts.stream().filter(Objects::nonNull).map(x -> transformHostSystem(x)).collect(Collectors.toList());
@@ -276,8 +349,14 @@ public class DiscoveryInfoToVCenterSystemPropertiesTransformer {
         return datastoreIds.stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-    private List<DatastoreDto> transformDatastores(final List<Datastore> datastores) {
-        if (datastores == null) {
+    private List<DatastoreDto> transformDatastores(final Map<String,Datastore> datastoresMap) {
+        if (datastoresMap == null) {
+            return null;
+        }
+
+        Collection<Datastore> datastores =datastoresMap.values();
+        if (datastores==null)
+        {
             return null;
         }
         return datastores.stream().filter(Objects::nonNull).map(x -> transformDatastore(x)).collect(Collectors.toList());
@@ -308,8 +387,14 @@ public class DiscoveryInfoToVCenterSystemPropertiesTransformer {
         return returnVal;
     }
 
-    private List<DvSwitchDto> transformDVSwitches(final List<DvSwitch> dvSwitches) {
-        if (dvSwitches == null) {
+    private List<DvSwitchDto> transformDVSwitches(final Map<String,DvSwitch> dvSwitchesMap) {
+        if (dvSwitchesMap == null) {
+            return null;
+        }
+
+        Collection<DvSwitch> dvSwitches =dvSwitchesMap.values();
+        if (dvSwitches==null)
+        {
             return null;
         }
         return dvSwitches.stream().filter(Objects::nonNull).map(x -> transformDVSwitch(x)).collect(Collectors.toList());
@@ -417,8 +502,14 @@ public class DiscoveryInfoToVCenterSystemPropertiesTransformer {
         return returnVal;
     }
 
-    private List<NetworkDto> transformNetworks(final List<Network> networks) {
-        if (networks == null) {
+    private List<NetworkDto> transformNetworks(final Map<String,Network> networksMap) {
+        if (networksMap == null) {
+            return null;
+        }
+
+        Collection<Network> networks =networksMap.values();
+        if (networks==null)
+        {
             return null;
         }
         return networks.stream().filter(Objects::nonNull).map(x -> transformNetwork(x)).collect(Collectors.toList());
@@ -451,8 +542,13 @@ public class DiscoveryInfoToVCenterSystemPropertiesTransformer {
         return hostIds.stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-    private List<VirtualMachineDto> transformVms(final List<VirtualMachine> vms) {
-        if (vms == null) {
+    private List<VirtualMachineDto> transformVms(final Map<String,VirtualMachine> vmsMap) {
+        if (vmsMap == null) {
+            return null;
+        }
+        Collection<VirtualMachine> vms =vmsMap.values();
+        if (vms==null)
+        {
             return null;
         }
         return vms.stream().filter(Objects::nonNull).map(x -> transformVm(x)).collect(Collectors.toList());

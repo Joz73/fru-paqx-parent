@@ -1,0 +1,1486 @@
+{
+  "messageProperties": {
+    "timestamp": "2017-05-17T10:13:17.458+0000",
+    "correlationId": "c72445b6-5681-4669-b12f-22eb577b0217",
+    "replyTo": "fru-paqx.IRENWHOOLTL1C"
+  },
+  "scaleIOSystemDataRestRep": {
+    "mdmMode": null,
+    "primaryMdmActorIpList": null,
+    "secondaryMdmActorIpList": null,
+    "tiebreakerMdmIpList": null,
+    "systemVersionName": "EMC ScaleIO Version: R2_0.7120.0",
+    "mdmClusterState": null,
+    "id": "1116c4e3676c415d",
+    "name": "mcr1-sio2",
+    "installId": "3ee27f6c71123c05",
+    "mdmCluster": {
+      "clusterState": "ClusteredNormal",
+      "id": "1231388029104177501",
+      "goodNodesNum": "5",
+      "tieBreakers": [{
+        "port": "9011",
+        "id": "0b885dde0e2cb2c4",
+        "versionInfo": "R2_0.7120.0",
+        "status": "Normal",
+        "ips": [
+          "172.24.249.170",
+          "172.24.249.234"
+        ],
+        "name": "TB1",
+        "role": "TieBreaker",
+        "managementIPs": [
+          "172.24.249.170",
+          "172.24.249.234"
+        ]
+      },
+        {
+          "port": "9011",
+          "id": "5a91f030736b36a3",
+          "versionInfo": "R2_0.7120.0",
+          "status": "Normal",
+          "ips": [
+            "172.24.249.176",
+            "172.24.249.239"
+          ],
+          "name": "TB2",
+          "role": "TieBreaker",
+          "managementIPs": [
+            "172.24.249.176",
+            "172.24.249.239"
+          ]
+        }
+      ],
+      "name": null,
+      "slaves": [{
+        "port": "9011",
+        "id": "5d0d11b644b55ca0",
+        "versionInfo": "R2_0.7120.0",
+        "status": "Normal",
+        "ips": [
+          "172.24.249.158",
+          "172.24.249.222"
+        ],
+        "name": "Manager1",
+        "role": "Manager",
+        "managementIPs": [
+          "10.3.251.7"
+        ]
+      },
+        {
+          "port": "9011",
+          "id": "24f7999a7b3f2cc1",
+          "versionInfo": "R2_0.7120.0",
+          "status": "Normal",
+          "ips": [
+            "172.24.249.175",
+            "172.24.249.238"
+          ],
+          "name": "Manager3",
+          "role": "Manager",
+          "managementIPs": [
+            "10.3.251.24"
+          ]
+        }
+      ],
+      "goodReplicasNum": "3",
+      "master": {
+        "port": "9011",
+        "id": "116b4a8f476c66b2",
+        "versionInfo": "R2_0.7120.0",
+        "ips": [
+          "172.24.249.166",
+          "172.24.249.230"
+        ],
+        "name": "Manager2",
+        "role": "Manager",
+        "managementIPs": [
+          "10.3.251.15"
+        ]
+      },
+      "clusterMode": "FiveNodes"
+    },
+    "version": "EMC ScaleIO Version: R2_0.7120.0",
+    "sdcList": [{
+      "id": "f1ae7adc00000003",
+      "name": "ESX-10.3.249.182",
+      "sdcIp": "172.24.249.209",
+      "sdcGuid": "FB9888D4-0867-4F80-BE0D-AE76C054F1FE",
+      "mdmConnectionState": "Connected"
+    },
+      {
+        "id": "f1ae7ada00000001",
+        "name": "ESX-10.3.249.186",
+        "sdcIp": "172.24.249.213",
+        "sdcGuid": "457E2229-CBA2-4D09-AFED-496B69807FB1",
+        "mdmConnectionState": "Connected"
+      },
+      {
+        "id": "f1ae7adb00000002",
+        "name": "ESX-10.3.249.174",
+        "sdcIp": "172.24.249.137",
+        "sdcGuid": "5E6E2911-E833-48EC-B9F5-CD1E8BAA7EC3",
+        "mdmConnectionState": "Connected"
+      },
+      {
+        "id": "f1ae7add00000004",
+        "name": "ESX-10.3.249.191",
+        "sdcIp": "172.24.249.178",
+        "sdcGuid": "8ECAD1F4-971E-4E2F-B9D8-D10DA520B735",
+        "mdmConnectionState": "Connected"
+      },
+      {
+        "id": "f1ae7ad900000000",
+        "name": "ESX-10.3.249.192",
+        "sdcIp": "172.24.249.179",
+        "sdcGuid": "18A5D790-E026-48CE-9C5E-EAFDB97228B2",
+        "mdmConnectionState": "Connected"
+      }
+    ],
+    "sdsList": [{
+      "protectionDomain": {
+        "id": "aee4c71b00000000",
+        "name": "PD01",
+        "systemId": "1116c4e3676c415d",
+        "protectionDomainState": "Active"
+      },
+      "faultSet": null,
+      "id": "adab560e00000005",
+      "protectionDomainId": "aee4c71b00000000",
+      "name": "mcr1-c4.mdmz.lab.vce.com",
+      "sdsState": "Normal",
+      "port": "7072",
+      "faultSetId": null,
+      "deviceList": [{
+        "storagePool": {
+          "protectionDomainId": "aee4c71b00000000",
+          "name": "SP01",
+          "id": "ed4e9db100000000",
+          "capacityAvailableForVolumeAllocationInKb": null,
+          "maxCapacityInKb": null,
+          "numOfVolumes": null
+        },
+        "id": "1e7c9ae700050000",
+        "name": "sdb",
+        "deviceCurrentPathName": "/dev/sdb",
+        "storagePoolId": "ed4e9db100000000"
+      },
+        {
+          "storagePool": {
+            "protectionDomainId": "aee4c71b00000000",
+            "name": "SP01",
+            "id": "ed4e9db100000000",
+            "capacityAvailableForVolumeAllocationInKb": null,
+            "maxCapacityInKb": null,
+            "numOfVolumes": null
+          },
+          "id": "1e7c9ae800050001",
+          "name": "sdc",
+          "deviceCurrentPathName": "/dev/sdc",
+          "storagePoolId": "ed4e9db100000000"
+        },
+        {
+          "storagePool": {
+            "protectionDomainId": "aee4c71b00000000",
+            "name": "SP01",
+            "id": "ed4e9db100000000",
+            "capacityAvailableForVolumeAllocationInKb": null,
+            "maxCapacityInKb": null,
+            "numOfVolumes": null
+          },
+          "id": "1e7c9ae900050002",
+          "name": "sdd",
+          "deviceCurrentPathName": "/dev/sdd",
+          "storagePoolId": "ed4e9db100000000"
+        },
+        {
+          "storagePool": {
+            "protectionDomainId": "aee4c71b00000000",
+            "name": "SP01",
+            "id": "ed4e9db100000000",
+            "capacityAvailableForVolumeAllocationInKb": null,
+            "maxCapacityInKb": null,
+            "numOfVolumes": null
+          },
+          "id": "1e7c9aea00050003",
+          "name": "sde",
+          "deviceCurrentPathName": "/dev/sde",
+          "storagePoolId": "ed4e9db100000000"
+        },
+        {
+          "storagePool": {
+            "protectionDomainId": "aee4c71b00000000",
+            "name": "SP01",
+            "id": "ed4e9db100000000",
+            "capacityAvailableForVolumeAllocationInKb": null,
+            "maxCapacityInKb": null,
+            "numOfVolumes": null
+          },
+          "id": "1e7c9aeb00050004",
+          "name": "sdf",
+          "deviceCurrentPathName": "/dev/sdf",
+          "storagePoolId": "ed4e9db100000000"
+        },
+        {
+          "storagePool": {
+            "protectionDomainId": "aee4c71b00000000",
+            "name": "SP01",
+            "id": "ed4e9db100000000",
+            "capacityAvailableForVolumeAllocationInKb": null,
+            "maxCapacityInKb": null,
+            "numOfVolumes": null
+          },
+          "id": "1e7c9aec00050005",
+          "name": "sdg",
+          "deviceCurrentPathName": "/dev/sdg",
+          "storagePoolId": "ed4e9db100000000"
+        }
+      ],
+      "ipList": [{
+        "role": "all",
+        "ip": "172.24.249.158"
+      },
+        {
+          "role": "all",
+          "ip": "172.24.249.222"
+        }
+      ]
+    },
+      {
+        "protectionDomain": {
+          "id": "aee4c71b00000000",
+          "name": "PD01",
+          "systemId": "1116c4e3676c415d",
+          "protectionDomainState": "Active"
+        },
+        "faultSet": null,
+        "id": "adab560a00000001",
+        "protectionDomainId": "aee4c71b00000000",
+        "name": "mcr1-c16.mdmz.lab.vce.com-ESX",
+        "sdsState": "Normal",
+        "port": "7072",
+        "faultSetId": null,
+        "deviceList": [{
+          "storagePool": {
+            "protectionDomainId": "aee4c71b00000000",
+            "name": "SP01",
+            "id": "ed4e9db100000000",
+            "capacityAvailableForVolumeAllocationInKb": null,
+            "maxCapacityInKb": null,
+            "numOfVolumes": null
+          },
+          "id": "1e7ce90700010000",
+          "name": "sdb",
+          "deviceCurrentPathName": "/dev/sdb",
+          "storagePoolId": "ed4e9db100000000"
+        },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce90800010001",
+            "name": "sdc",
+            "deviceCurrentPathName": "/dev/sdc",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce90900010002",
+            "name": "sdd",
+            "deviceCurrentPathName": "/dev/sdd",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce90a00010003",
+            "name": "sde",
+            "deviceCurrentPathName": "/dev/sde",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce90b00010004",
+            "name": "sdf",
+            "deviceCurrentPathName": "/dev/sdf",
+            "storagePoolId": "ed4e9db100000000"
+          }
+        ],
+        "ipList": [{
+          "role": "all",
+          "ip": "172.24.249.170"
+        },
+          {
+            "role": "all",
+            "ip": "172.24.249.234"
+          }
+        ]
+      },
+      {
+        "protectionDomain": {
+          "id": "aee4c71b00000000",
+          "name": "PD01",
+          "systemId": "1116c4e3676c415d",
+          "protectionDomainState": "Active"
+        },
+        "faultSet": null,
+        "id": "adab560d00000004",
+        "protectionDomainId": "aee4c71b00000000",
+        "name": "mcr1-s1.mdmz.lab.vce.com-ESX",
+        "sdsState": "Normal",
+        "port": "7072",
+        "faultSetId": null,
+        "deviceList": [{
+          "storagePool": {
+            "protectionDomainId": "aee4c71b00000000",
+            "name": "SP01",
+            "id": "ed4e9db100000000",
+            "capacityAvailableForVolumeAllocationInKb": null,
+            "maxCapacityInKb": null,
+            "numOfVolumes": null
+          },
+          "id": "1e7ce90c00040000",
+          "name": "sdb",
+          "deviceCurrentPathName": "/dev/sdb",
+          "storagePoolId": "ed4e9db100000000"
+        },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce90d00040001",
+            "name": "sdc",
+            "deviceCurrentPathName": "/dev/sdc",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce90e00040002",
+            "name": "sdd",
+            "deviceCurrentPathName": "/dev/sdd",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce90f00040003",
+            "name": "sde",
+            "deviceCurrentPathName": "/dev/sde",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce91000040004",
+            "name": "sdf",
+            "deviceCurrentPathName": "/dev/sdf",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce91100040005",
+            "name": "sdg",
+            "deviceCurrentPathName": "/dev/sdg",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce91200040006",
+            "name": "sdh",
+            "deviceCurrentPathName": "/dev/sdh",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce91300040007",
+            "name": "sdi",
+            "deviceCurrentPathName": "/dev/sdi",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce91400040008",
+            "name": "sdj",
+            "deviceCurrentPathName": "/dev/sdj",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce91500040009",
+            "name": "sdk",
+            "deviceCurrentPathName": "/dev/sdk",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce9160004000a",
+            "name": "sdl",
+            "deviceCurrentPathName": "/dev/sdl",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce9170004000b",
+            "name": "sdm",
+            "deviceCurrentPathName": "/dev/sdm",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce9180004000c",
+            "name": "sdn",
+            "deviceCurrentPathName": "/dev/sdn",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce9190004000d",
+            "name": "sdo",
+            "deviceCurrentPathName": "/dev/sdo",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce91a0004000e",
+            "name": "sdp",
+            "deviceCurrentPathName": "/dev/sdp",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce91b0004000f",
+            "name": "sdq",
+            "deviceCurrentPathName": "/dev/sdq",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce91c00040010",
+            "name": "sdr",
+            "deviceCurrentPathName": "/dev/sdr",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce91d00040011",
+            "name": "sds",
+            "deviceCurrentPathName": "/dev/sds",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce91e00040012",
+            "name": "sdt",
+            "deviceCurrentPathName": "/dev/sdt",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce91f00040013",
+            "name": "sdu",
+            "deviceCurrentPathName": "/dev/sdu",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce92000040014",
+            "name": "sdv",
+            "deviceCurrentPathName": "/dev/sdv",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce92100040015",
+            "name": "sdw",
+            "deviceCurrentPathName": "/dev/sdw",
+            "storagePoolId": "ed4e9db100000000"
+          }
+        ],
+        "ipList": [{
+          "role": "all",
+          "ip": "172.24.249.175"
+        },
+          {
+            "role": "all",
+            "ip": "172.24.249.238"
+          }
+        ]
+      },
+      {
+        "protectionDomain": {
+          "id": "aee4c71b00000000",
+          "name": "PD01",
+          "systemId": "1116c4e3676c415d",
+          "protectionDomainState": "Active"
+        },
+        "faultSet": null,
+        "id": "adab560900000000",
+        "protectionDomainId": "aee4c71b00000000",
+        "name": "mcr1-s2.mdmz.lab.vce.com-ESX",
+        "sdsState": "Normal",
+        "port": "7072",
+        "faultSetId": null,
+        "deviceList": [{
+          "storagePool": {
+            "protectionDomainId": "aee4c71b00000000",
+            "name": "SP01",
+            "id": "ed4e9db100000000",
+            "capacityAvailableForVolumeAllocationInKb": null,
+            "maxCapacityInKb": null,
+            "numOfVolumes": null
+          },
+          "id": "1e7ce92200000000",
+          "name": "sdb",
+          "deviceCurrentPathName": "/dev/sdb",
+          "storagePoolId": "ed4e9db100000000"
+        },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce92300000001",
+            "name": "sdc",
+            "deviceCurrentPathName": "/dev/sdc",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce92400000002",
+            "name": "sdd",
+            "deviceCurrentPathName": "/dev/sdd",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce92500000003",
+            "name": "sde",
+            "deviceCurrentPathName": "/dev/sde",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce92600000004",
+            "name": "sdf",
+            "deviceCurrentPathName": "/dev/sdf",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce92700000005",
+            "name": "sdg",
+            "deviceCurrentPathName": "/dev/sdg",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce92800000006",
+            "name": "sdh",
+            "deviceCurrentPathName": "/dev/sdh",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce92900000007",
+            "name": "sdi",
+            "deviceCurrentPathName": "/dev/sdi",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce92a00000008",
+            "name": "sdj",
+            "deviceCurrentPathName": "/dev/sdj",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce92b00000009",
+            "name": "sdk",
+            "deviceCurrentPathName": "/dev/sdk",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce92c0000000a",
+            "name": "sdl",
+            "deviceCurrentPathName": "/dev/sdl",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce92d0000000b",
+            "name": "sdm",
+            "deviceCurrentPathName": "/dev/sdm",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce92e0000000c",
+            "name": "sdn",
+            "deviceCurrentPathName": "/dev/sdn",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce92f0000000d",
+            "name": "sdo",
+            "deviceCurrentPathName": "/dev/sdo",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce9300000000e",
+            "name": "sdp",
+            "deviceCurrentPathName": "/dev/sdp",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce9310000000f",
+            "name": "sdq",
+            "deviceCurrentPathName": "/dev/sdq",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce93200000010",
+            "name": "sdr",
+            "deviceCurrentPathName": "/dev/sdr",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce93300000011",
+            "name": "sds",
+            "deviceCurrentPathName": "/dev/sds",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce93400000012",
+            "name": "sdt",
+            "deviceCurrentPathName": "/dev/sdt",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce93500000013",
+            "name": "sdu",
+            "deviceCurrentPathName": "/dev/sdu",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce93600000014",
+            "name": "sdv",
+            "deviceCurrentPathName": "/dev/sdv",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7ce93700000015",
+            "name": "sdw",
+            "deviceCurrentPathName": "/dev/sdw",
+            "storagePoolId": "ed4e9db100000000"
+          }
+        ],
+        "ipList": [{
+          "role": "all",
+          "ip": "172.24.249.176"
+        },
+          {
+            "role": "all",
+            "ip": "172.24.249.239"
+          }
+        ]
+      },
+      {
+        "protectionDomain": {
+          "id": "aee4c71b00000000",
+          "name": "PD01",
+          "systemId": "1116c4e3676c415d",
+          "protectionDomainState": "Active"
+        },
+        "faultSet": null,
+        "id": "adab560c00000003",
+        "protectionDomainId": "aee4c71b00000000",
+        "name": "mcr1-c12.mdmz.lab.vce.com-ESX",
+        "sdsState": "Normal",
+        "port": "7072",
+        "faultSetId": null,
+        "deviceList": [{
+          "storagePool": {
+            "protectionDomainId": "aee4c71b00000000",
+            "name": "SP01",
+            "id": "ed4e9db100000000",
+            "capacityAvailableForVolumeAllocationInKb": null,
+            "maxCapacityInKb": null,
+            "numOfVolumes": null
+          },
+          "id": "1e7cc1f700030000",
+          "name": "sdb",
+          "deviceCurrentPathName": "/dev/sdb",
+          "storagePoolId": "ed4e9db100000000"
+        },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7cc1f800030001",
+            "name": "sdc",
+            "deviceCurrentPathName": "/dev/sdc",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7cc1f900030002",
+            "name": "sdd",
+            "deviceCurrentPathName": "/dev/sdd",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7cc1fa00030003",
+            "name": "sde",
+            "deviceCurrentPathName": "/dev/sde",
+            "storagePoolId": "ed4e9db100000000"
+          },
+          {
+            "storagePool": {
+              "protectionDomainId": "aee4c71b00000000",
+              "name": "SP01",
+              "id": "ed4e9db100000000",
+              "capacityAvailableForVolumeAllocationInKb": null,
+              "maxCapacityInKb": null,
+              "numOfVolumes": null
+            },
+            "id": "1e7cc1fb00030004",
+            "name": "sdf",
+            "deviceCurrentPathName": "/dev/sdf",
+            "storagePoolId": "ed4e9db100000000"
+          }
+        ],
+        "ipList": [{
+          "role": "all",
+          "ip": "172.24.249.166"
+        },
+          {
+            "role": "all",
+            "ip": "172.24.249.230"
+          }
+        ]
+      },
+      {
+        "protectionDomain": {
+          "id": "aee4c71b00000000",
+          "name": "PD01",
+          "systemId": "1116c4e3676c415d",
+          "protectionDomainState": "Active"
+        },
+        "faultSet": null,
+        "id": "adab7d2600000013",
+        "protectionDomainId": "aee4c71b00000000",
+        "name": "10.3.251.54",
+        "sdsState": "Normal",
+        "port": "7072",
+        "faultSetId": null,
+        "deviceList": [{
+          "storagePool": {
+            "protectionDomainId": "aee4c71b00000000",
+            "name": "SP01",
+            "id": "ed4e9db100000000",
+            "capacityAvailableForVolumeAllocationInKb": null,
+            "maxCapacityInKb": null,
+            "numOfVolumes": null
+          },
+          "id": "1e7ce94500130000",
+          "name": null,
+          "deviceCurrentPathName": "/dev/sdb",
+          "storagePoolId": "ed4e9db100000000"
+        }],
+        "ipList": [{
+          "role": "all",
+          "ip": "172.24.249.185"
+        }]
+      }
+    ]
+  },
+  "vCenterSystem": {
+    "datastores": [
+      "DAS12",
+      "DAS16",
+      "DAS4",
+      "DASS1",
+      "DASS2",
+      "MIGRATION",
+      "SIO-CDSA",
+      "SIO-CDSB"
+    ],
+    "dvSwitches": [
+      "DSwitch0",
+      "DSwitch1",
+      "DSwitch2"
+    ],
+    "clusters": [
+      "DenseStorage",
+      "Customer"
+    ],
+    "hosts": [
+      "mcr1-s1.mdmz.lab.vce.com",
+      "mcr1-s2.mdmz.lab.vce.com",
+      "mcr1-c4.mdmz.lab.vce.com",
+      "mcr1-c12.mdmz.lab.vce.com",
+      "mcr1-c16.mdmz.lab.vce.com"
+    ],
+    "hostNetworks": [{
+      "hostname": "mcr1-s1.mdmz.lab.vce.com",
+      "physical_nics": [{
+        "device": "vmnic0",
+        "key": "key-vim.host.PhysicalNic-vmnic0",
+        "mac": "2c:60:0c:c0:a8:67"
+      },
+        {
+          "device": "vmnic1",
+          "key": "key-vim.host.PhysicalNic-vmnic1",
+          "mac": "2c:60:0c:c0:a8:68"
+        },
+        {
+          "device": "vmnic2",
+          "key": "key-vim.host.PhysicalNic-vmnic2",
+          "mac": "90:e2:ba:8b:88:58"
+        },
+        {
+          "device": "vmnic3",
+          "key": "key-vim.host.PhysicalNic-vmnic3",
+          "mac": "90:e2:ba:8b:88:59"
+        },
+        {
+          "device": "vmnic4",
+          "key": "key-vim.host.PhysicalNic-vmnic4",
+          "mac": "2c:60:0c:66:fd:fc"
+        },
+        {
+          "device": "vmnic5",
+          "key": "key-vim.host.PhysicalNic-vmnic5",
+          "mac": "2c:60:0c:66:fd:fd"
+        }
+      ],
+      "portgroups": [{
+        "key": "key-vim.host.PortGroup-VM Network",
+        "name": "VM Network",
+        "vlanId": 0,
+        "vswitchName": "vSwitch0"
+      }],
+      "virtual_nics": [{
+        "device": "vmk0",
+        "ip": "10.3.249.191",
+        "key": "key-vim.host.VirtualNic-vmk0",
+        "subnet_mask": "255.255.255.128"
+      },
+        {
+          "device": "vmk1",
+          "ip": "172.24.249.26",
+          "key": "key-vim.host.VirtualNic-vmk1",
+          "subnet_mask": "255.255.255.192"
+        },
+        {
+          "device": "vmk2",
+          "ip": "172.24.249.178",
+          "key": "key-vim.host.VirtualNic-vmk2",
+          "subnet_mask": "255.255.255.192"
+        },
+        {
+          "device": "vmk3",
+          "ip": "172.24.249.242",
+          "key": "key-vim.host.VirtualNic-vmk3",
+          "subnet_mask": "255.255.255.192"
+        },
+        {
+          "device": "vmk4",
+          "ip": "10.3.251.30",
+          "key": "key-vim.host.VirtualNic-vmk4",
+          "subnet_mask": "255.255.255.192"
+        }
+      ],
+      "vswitches": [{
+        "key": "key-vim.host.VirtualSwitch-vSwitch0",
+        "mtu": 1500,
+        "name": "vSwitch0"
+      }]
+    },
+      {
+        "hostname": "mcr1-s2.mdmz.lab.vce.com",
+        "physical_nics": [{
+          "device": "vmnic0",
+          "key": "key-vim.host.PhysicalNic-vmnic0",
+          "mac": "2c:60:0c:45:3f:2c"
+        },
+          {
+            "device": "vmnic1",
+            "key": "key-vim.host.PhysicalNic-vmnic1",
+            "mac": "2c:60:0c:45:3f:2d"
+          },
+          {
+            "device": "vmnic2",
+            "key": "key-vim.host.PhysicalNic-vmnic2",
+            "mac": "90:e2:ba:89:e9:18"
+          },
+          {
+            "device": "vmnic3",
+            "key": "key-vim.host.PhysicalNic-vmnic3",
+            "mac": "90:e2:ba:89:e9:19"
+          }
+        ],
+        "portgroups": [{
+          "key": "key-vim.host.PortGroup-VM Network",
+          "name": "VM Network",
+          "vlanId": 0,
+          "vswitchName": "vSwitch0"
+        }],
+        "virtual_nics": [{
+          "device": "vmk0",
+          "ip": "10.3.249.192",
+          "key": "key-vim.host.VirtualNic-vmk0",
+          "subnet_mask": "255.255.255.128"
+        },
+          {
+            "device": "vmk1",
+            "ip": "172.24.249.27",
+            "key": "key-vim.host.VirtualNic-vmk1",
+            "subnet_mask": "255.255.255.192"
+          },
+          {
+            "device": "vmk2",
+            "ip": "172.24.249.179",
+            "key": "key-vim.host.VirtualNic-vmk2",
+            "subnet_mask": "255.255.255.192"
+          },
+          {
+            "device": "vmk3",
+            "ip": "172.24.249.243",
+            "key": "key-vim.host.VirtualNic-vmk3",
+            "subnet_mask": "255.255.255.192"
+          }
+        ],
+        "vswitches": [{
+          "key": "key-vim.host.VirtualSwitch-vSwitch0",
+          "mtu": 1500,
+          "name": "vSwitch0"
+        }]
+      },
+      {
+        "hostname": "mcr1-c4.mdmz.lab.vce.com",
+        "physical_nics": [{
+          "device": "vmnic0",
+          "key": "key-vim.host.PhysicalNic-vmnic0",
+          "mac": "2c:60:0c:7b:35:ac"
+        },
+          {
+            "device": "vmnic1",
+            "key": "key-vim.host.PhysicalNic-vmnic1",
+            "mac": "2c:60:0c:7b:35:ad"
+          },
+          {
+            "device": "vmnic2",
+            "key": "key-vim.host.PhysicalNic-vmnic2",
+            "mac": "2c:60:0c:45:3d:d0"
+          },
+          {
+            "device": "vmnic3",
+            "key": "key-vim.host.PhysicalNic-vmnic3",
+            "mac": "2c:60:0c:45:3d:d1"
+          }
+        ],
+        "portgroups": [{
+          "key": "key-vim.host.PortGroup-VM Network",
+          "name": "VM Network",
+          "vlanId": 0,
+          "vswitchName": "vSwitch0"
+        }],
+        "virtual_nics": [{
+          "device": "vmk0",
+          "ip": "10.3.249.174",
+          "key": "key-vim.host.VirtualNic-vmk0",
+          "subnet_mask": "255.255.255.128"
+        },
+          {
+            "device": "vmk1",
+            "ip": "172.24.249.9",
+            "key": "key-vim.host.VirtualNic-vmk1",
+            "subnet_mask": "255.255.255.192"
+          },
+          {
+            "device": "vmk2",
+            "ip": "172.24.249.137",
+            "key": "key-vim.host.VirtualNic-vmk2",
+            "subnet_mask": "255.255.255.192"
+          },
+          {
+            "device": "vmk3",
+            "ip": "172.24.249.201",
+            "key": "key-vim.host.VirtualNic-vmk3",
+            "subnet_mask": "255.255.255.192"
+          }
+        ],
+        "vswitches": [{
+          "key": "key-vim.host.VirtualSwitch-vSwitch0",
+          "mtu": 1500,
+          "name": "vSwitch0"
+        }]
+      },
+      {
+        "hostname": "mcr1-c12.mdmz.lab.vce.com",
+        "physical_nics": [{
+          "device": "vmnic0",
+          "key": "key-vim.host.PhysicalNic-vmnic0",
+          "mac": "2c:60:0c:7b:35:d6"
+        },
+          {
+            "device": "vmnic1",
+            "key": "key-vim.host.PhysicalNic-vmnic1",
+            "mac": "2c:60:0c:7b:35:d7"
+          },
+          {
+            "device": "vmnic2",
+            "key": "key-vim.host.PhysicalNic-vmnic2",
+            "mac": "2c:60:0c:45:3e:92"
+          },
+          {
+            "device": "vmnic3",
+            "key": "key-vim.host.PhysicalNic-vmnic3",
+            "mac": "2c:60:0c:45:3e:93"
+          }
+        ],
+        "portgroups": [{
+          "key": "key-vim.host.PortGroup-VM Network",
+          "name": "VM Network",
+          "vlanId": 0,
+          "vswitchName": "vSwitch0"
+        }],
+        "virtual_nics": [{
+          "device": "vmk0",
+          "ip": "10.3.249.182",
+          "key": "key-vim.host.VirtualNic-vmk0",
+          "subnet_mask": "255.255.255.128"
+        },
+          {
+            "device": "vmk1",
+            "ip": "172.24.249.17",
+            "key": "key-vim.host.VirtualNic-vmk1",
+            "subnet_mask": "255.255.255.192"
+          },
+          {
+            "device": "vmk2",
+            "ip": "172.24.249.145",
+            "key": "key-vim.host.VirtualNic-vmk2",
+            "subnet_mask": "255.255.255.192"
+          },
+          {
+            "device": "vmk3",
+            "ip": "172.24.249.209",
+            "key": "key-vim.host.VirtualNic-vmk3",
+            "subnet_mask": "255.255.255.192"
+          }
+        ],
+        "vswitches": [{
+          "key": "key-vim.host.VirtualSwitch-vSwitch0",
+          "mtu": 1500,
+          "name": "vSwitch0"
+        }]
+      },
+      {
+        "hostname": "mcr1-c16.mdmz.lab.vce.com",
+        "physical_nics": [{
+          "device": "vmnic0",
+          "key": "key-vim.host.PhysicalNic-vmnic0",
+          "mac": "2c:60:0c:7b:35:54"
+        },
+          {
+            "device": "vmnic1",
+            "key": "key-vim.host.PhysicalNic-vmnic1",
+            "mac": "2c:60:0c:7b:35:55"
+          },
+          {
+            "device": "vmnic2",
+            "key": "key-vim.host.PhysicalNic-vmnic2",
+            "mac": "2c:60:0c:66:a2:e1"
+          },
+          {
+            "device": "vmnic3",
+            "key": "key-vim.host.PhysicalNic-vmnic3",
+            "mac": "2c:60:0c:66:a2:e2"
+          }
+        ],
+        "portgroups": [{
+          "key": "key-vim.host.PortGroup-VM Network",
+          "name": "VM Network",
+          "vlanId": 0,
+          "vswitchName": "vSwitch0"
+        }],
+        "virtual_nics": [{
+          "device": "vmk0",
+          "ip": "10.3.249.186",
+          "key": "key-vim.host.VirtualNic-vmk0",
+          "subnet_mask": "255.255.255.128"
+        },
+          {
+            "device": "vmk1",
+            "ip": "172.24.249.21",
+            "key": "key-vim.host.VirtualNic-vmk1",
+            "subnet_mask": "255.255.255.192"
+          },
+          {
+            "device": "vmk2",
+            "ip": "172.24.249.149",
+            "key": "key-vim.host.VirtualNic-vmk2",
+            "subnet_mask": "255.255.255.192"
+          },
+          {
+            "device": "vmk3",
+            "ip": "172.24.249.213",
+            "key": "key-vim.host.VirtualNic-vmk3",
+            "subnet_mask": "255.255.255.192"
+          }
+        ],
+        "vswitches": [{
+          "key": "key-vim.host.VirtualSwitch-vSwitch0",
+          "mtu": 1500,
+          "name": "vSwitch0"
+        }]
+      }
+    ],
+    "vcenter": "http://mcr1-cvcsa2.mdmz.lab.vce.com"
+  }
+}

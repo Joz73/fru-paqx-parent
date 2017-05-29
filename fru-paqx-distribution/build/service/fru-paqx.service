@@ -1,0 +1,22 @@
+# /usr/lib/systemd/system/fru-paqx.service
+# systemctl enable fru-paqx
+
+[Unit]
+Description=Dell Inc. FRU PAQX service
+After=network.target docker.service dell-services.service rabbitmq-server.service
+
+[Service]
+Type=simple
+User=fru
+Group=dell
+WorkingDirectory=/opt/dell/cpsd/fru-paqx/install/
+Environment=CREDENTIALS=/etc/rabbitmq/credentials.properties
+Environment=PASSPHRASES=/etc/rabbitmq/client/passphrases.properties
+Environment=TRUSTSTOREPATH=/etc/rabbitmq/certs/rabbitstore
+Environment=KEYSTOREPATH=/etc/rabbitmq/certs/client/keycert.p12
+Environment=HOSTNAME=%H
+ExecStart=/usr/bin/env /usr/bin/docker-compose -f /opt/dell/cpsd/fru-paqx/install/docker-compose.yml up
+ExecStop=/usr/bin/docker-compose -f /opt/dell/cpsd/fru-paqx/install/docker-compose.yml down
+
+[Install]
+WantedBy=multi-user.target

@@ -35,32 +35,25 @@ public class WorkflowServiceImpl implements WorkflowService {
         workflowSteps.put("capturevCenterEndpoint", new NextStep("captureScaleIOEndpoint"));
         workflowSteps.put("captureScaleIOEndpoint", new NextStep("startScaleIODataCollection"));
         workflowSteps.put("startScaleIODataCollection", new NextStep("startvCenterDataCollection"));
-        workflowSteps.put("startvCenterDataCollection", new NextStep("presentSystemListForRemoval"));
-        workflowSteps.put("presentSystemListForRemoval", new NextStep("startSIORemoveWorkflow"));
-        workflowSteps.put("startSIORemoveWorkflow", new NextStep("waitForSIORemoveComplete"));
-        workflowSteps.put("waitForSIORemoveComplete", new NextStep("destroyScaleIOVM"));
-        workflowSteps.put("destroyScaleIOVM", new NextStep("enterMaintanenceMode"));
-        //TODO: Change enterMaintanenceMode to enterMaintenanceMode
-        workflowSteps.put("enterMaintanenceMode", new NextStep("removeHostFromVCenter"));
+        workflowSteps.put("startvCenterDataCollection", new NextStep("getSystemList"));
+        workflowSteps.put("getSystemList", new NextStep("selectNodeForRemoval"));
+        workflowSteps.put("selectNodeForRemoval", new NextStep("captureScaleIOMDMCredentials"));
+        workflowSteps.put("captureScaleIOMDMCredentials", new NextStep("startSIORemoveWorkflow"));
+        workflowSteps.put("startSIORemoveWorkflow", new NextStep("destroyScaleIOVM"));
+        workflowSteps.put("destroyScaleIOVM", new NextStep("enterMaintenanceMode"));
+        workflowSteps.put("enterMaintenanceMode", new NextStep("removeHostFromVCenter"));
         workflowSteps.put("removeHostFromVCenter", new NextStep("rebootHostForDiscovery"));
-        //TODO: Check removeHostFromVCenter is in correct position or not?
-        workflowSteps.put("rebootHostForDiscovery", new NextStep("waitRackHDHostDiscovery"));
-
-        workflowSteps.put("waitRackHDHostDiscovery", new NextStep("powerOffEsxiHostForRemoval"));
+        workflowSteps.put("rebootHostForDiscovery", new NextStep("powerOffEsxiHostForRemoval"));
         workflowSteps.put("powerOffEsxiHostForRemoval", new NextStep("instructPhysicalRemoval"));
-
-        workflowSteps.put("instructPhysicalRemoval", new NextStep("waitRackHDHostDiscovery"));
-        workflowSteps.put("waitRackHDHostDiscovery", new NextStep("presentSystemListForAddition"));
+        workflowSteps.put("instructPhysicalRemoval", new NextStep("presentSystemListForAddition"));
         workflowSteps.put("presentSystemListForAddition", new NextStep("configureDisksRackHD"));
         workflowSteps.put("configureDisksRackHD", new NextStep("installEsxi"));
         workflowSteps.put("installEsxi", new NextStep("addHostTovCenter"));
         workflowSteps.put("addHostTovCenter", new NextStep("installSIOVib"));
         workflowSteps.put("installSIOVib", new NextStep("exitVCenterMaintenanceMode"));
         workflowSteps.put("exitVCenterMaintenanceMode", new NextStep("deploySVM"));
-        workflowSteps.put("deploySVM", new NextStep("waitForSVMDeploy"));
-        workflowSteps.put("waitForSVMDeploy", new NextStep("startSIOAddWorkflow"));
-        workflowSteps.put("startSIOAddWorkflow", new NextStep("waitForSIOAddComplete"));
-        workflowSteps.put("waitForSIOAddComplete", new NextStep("mapSIOVolumesToHost"));
+        workflowSteps.put("deploySVM", new NextStep("startSIOAddWorkflow"));
+        workflowSteps.put("startSIOAddWorkflow", new NextStep("mapSIOVolumesToHost"));
         workflowSteps.put("mapSIOVolumesToHost", new NextStep("completed", true));
         workflowSteps.put("completed", null);
     }

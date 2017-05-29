@@ -1,6 +1,6 @@
 /**
- * Copyright © 2017 Dell Inc. or its subsidiaries. All Rights Reserved.
- * VCE Confidential/Proprietary Information
+ * Copyright &copy; 2017 Dell Inc. or its subsidiaries.  All Rights Reserved.
+ * Dell EMC Confidential/Proprietary Information
  */
 
 package com.dell.cpsd.paqx.fru.amqp.consumer.handler;
@@ -22,6 +22,10 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.dell.cpsd.paqx.fru.amqp.config.RabbitConfig.EXCHANGE_FRU_RESPONSE;
 
+/**
+ * Copyright &copy; 2017 Dell Inc. or its subsidiaries.  All Rights Reserved.
+ * Dell EMC Confidential/Proprietary Information
+ */
 public class VCenterConsulRegisterResponseHandler extends DefaultMessageHandler<ConsulRegisterResponseMessage>
         implements AsyncAcknowledgement<ConsulRegistryResult> {
     private static final Logger LOG = LoggerFactory

@@ -1,8 +1,9 @@
-package com.dell.cpsd.paqx.fru.amqp.consumer.handler;
-
 /**
- * Created by taylorswift on 5/11/17.
+ * Copyright &copy; 2017 Dell Inc. or its subsidiaries.  All Rights Reserved.
+ * Dell EMC Confidential/Proprietary Information
  */
+
+package com.dell.cpsd.paqx.fru.amqp.consumer.handler;
 
 import com.dell.converged.capabilities.compute.discovered.nodes.api.NodeEventDiscovered;
 import com.dell.cpsd.paqx.fru.amqp.config.NodeDiscoveredAmqpConfig;
