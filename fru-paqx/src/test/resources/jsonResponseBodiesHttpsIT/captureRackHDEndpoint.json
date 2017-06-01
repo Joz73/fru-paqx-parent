@@ -1,0 +1,17 @@
+{
+  "id": "665a9bd5-9ed8-4178-950d-740e0b9bfa47",
+  "workflow": "quanta-stuff",
+  "currentStep": "captureRackHDEndpoint",
+  "currentStepNumber": -1,
+  "expectedNumberOfSteps": -1,
+  "lastResponse": null,
+  "links": [
+    {
+      "rel": "step-next",
+      "href": "https://localhost:18443/fru/api/workflow/665a9bd5-9ed8-4178-950d-740e0b9bfa47/capture-coprhd-endpoint",
+      "type": "application/vnd.dellemc.coprhd.endpoint+json",
+      "method": "POST",
+      "nextStepDelay": 0
+    }
+  ]
+}

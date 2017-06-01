@@ -59,6 +59,7 @@ public class H2DataServiceRepository implements DataServiceRepository
         }
         catch (NoResultException e)
         {
+            //TODO don't make it an error since it's expected behaviour on the first save
             LOG.error("No result", e);
         }
 
